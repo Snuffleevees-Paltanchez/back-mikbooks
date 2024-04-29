@@ -1,4 +1,4 @@
 {
-  "{src, test}/**/*.{ts}": ["npm run fixer", "npm run checker"],
-  "{src, test}/*.{ts}": ["npm run fixer", "npm run checker"]
+  "{src, test}/**/*.ts": ["npm run fixer", "npm run checker"],
+  "{src, test}/*.ts": ["npm run fixer", "npm run checker"]
 }
