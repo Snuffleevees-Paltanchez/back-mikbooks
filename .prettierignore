@@ -1,0 +1,7 @@
+package-lock.json
+package.json
+dist/
+.husky/
+node_modules/
+.eslintrc.js
+.prettierrc
