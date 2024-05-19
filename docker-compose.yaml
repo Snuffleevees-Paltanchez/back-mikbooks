@@ -24,6 +24,9 @@ services:
     build:
       dockerfile: Dockerfile.prod
 
+    env_file:
+      - .env.production.local
+
     ports:
       - "3000:3000"
   
