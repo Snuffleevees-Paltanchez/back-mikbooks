@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common'
-
-@Module({})
+import { AuthorService } from './author.service'
+@Module({
+  providers: [AuthorService],
+  exports: [AuthorService],
+})
 export class AuthorModule {}
