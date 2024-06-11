@@ -4,6 +4,14 @@ import { ConfigModule } from '@nestjs/config'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { PrismaModule } from './prisma/prisma.module'
+import { AuthModule } from './auth/auth.module'
+import { BookModule } from './book/book.module'
+import { PlatformModule } from './platform/platform.module'
+import { FavoriteModule } from './favorite/favorite.module'
+import { PriceModule } from './price/price.module'
+import { AuthorModule } from './author/author.module'
+import { RatingModule } from './rating/rating.module'
+import { DbModule } from './db/db.module'
 
 @Module({
   imports: [
@@ -11,6 +19,14 @@ import { PrismaModule } from './prisma/prisma.module'
       isGlobal: true,
     }),
     PrismaModule,
+    AuthModule,
+    BookModule,
+    PlatformModule,
+    FavoriteModule,
+    PriceModule,
+    AuthorModule,
+    RatingModule,
+    DbModule,
   ],
   controllers: [AppController],
   providers: [AppService],
