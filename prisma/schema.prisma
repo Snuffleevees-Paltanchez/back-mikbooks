@@ -43,7 +43,7 @@ model Book {
   id              Int       @id @default(autoincrement())
   title           String    @db.VarChar(255)
   authorId        Int
-  isbn            String    @unique @db.VarChar(20)
+  isbn            String    @unique @db.VarChar(13)
   publicationDate DateTime?
   description     String?   @db.Text
   imgUrl          String?   @db.VarChar(255)
@@ -51,7 +51,8 @@ model Book {
   updatedAt       DateTime  @updatedAt
   isDeleted       Boolean   @default(false)
 
-  author Author @relation(fields: [authorId], references: [id])
+  author     Author     @relation(fields: [authorId], references: [id])
+  categories Category[]
 
   prices    Price[]
   favorites Favorite[]
@@ -75,6 +76,7 @@ model Price {
 
   book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
+  @@unique([bookId, platformId])
   @@map("prices")
 }
 
@@ -102,4 +104,16 @@ model Favorite {
   book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
   @@map("favorites")
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
+  books Book[]
+
+  @@map("categories")
 }

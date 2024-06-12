@@ -12,6 +12,7 @@ import { PriceModule } from './price/price.module'
 import { AuthorModule } from './author/author.module'
 import { RatingModule } from './rating/rating.module'
 import { DbModule } from './db/db.module'
+import { CategoryModule } from './category/category.module'
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { DbModule } from './db/db.module'
     AuthorModule,
     RatingModule,
     DbModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
