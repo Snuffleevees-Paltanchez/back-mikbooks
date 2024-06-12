@@ -62,4 +62,4 @@ jobs:
             sudo $(aws ecr get-login --no-include-email --region us-east-1);
             sudo docker compose down web || true
             sudo docker compose pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
-            sudo docker compose up -d --name web
+            sudo docker compose up -d
