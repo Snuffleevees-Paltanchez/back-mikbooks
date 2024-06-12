@@ -56,6 +56,6 @@ jobs:
           key: ${{ env.PRIVATE_SSH_KEY }}
           envs: PRIVATE_SSH_KEY,REGISTRY,REPOSITORY,IMAGE_TAG,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION,AWS_REGION
           script: |-
-            sudo docker compose down web || true
-            sudo docker compose pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
-            sudo docker compose up -d
+            sudo docker compose -f docker-compose-prod.yaml down web || true
+            sudo docker compose -f docker-compose-prod.yaml pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
+            sudo docker compose -f docker-compose-prod.yaml up -d
