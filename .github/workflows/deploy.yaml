@@ -2,7 +2,7 @@ name: backend-deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, deploy]
 
 permissions:
   contents: read
@@ -36,18 +36,17 @@ jobs:
       - name: Build, tag, and push docker image to Amazon ECR Public (api)
         env:
           REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
-          REGISTRY_ALIAS: w8w7e4n2
+          REGISTRY_ALIAS: r8s7y4q1
           REPOSITORY: mikbooks
           IMAGE_TAG: latest
         run: |
-          cd api
           docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
       - name: Deploy docker image to EC2
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: mikbooks
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: latest
           AWS_DEFAULT_REGION: us-east-1
         uses: appleboy/ssh-action@master
         with:
@@ -60,7 +59,7 @@ jobs:
             sudo apt install docker.io -y
             sudo apt install awscli -y
             sudo $(aws ecr get-login --no-include-email --region us-east-1);
-            sudo docker stop myappcontainer || true
-            sudo docker rm myappcontainer || true
+            sudo docker stop web || true
+            sudo docker rm web || true
             sudo docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
-            sudo docker run -d --name myappcontainer -p 80:80 $REGISTRY/$REPOSITORY:$IMAGE_TAG
+            sudo docker run -d --name web -p 3000:3000 $REGISTRY/$REPOSITORY:$IMAGE_TAG
