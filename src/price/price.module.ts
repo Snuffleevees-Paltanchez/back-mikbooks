@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common'
-
-@Module({})
+import { PriceService } from './price.service'
+@Module({
+  providers: [PriceService],
+  exports: [PriceService],
+})
 export class PriceModule {}
