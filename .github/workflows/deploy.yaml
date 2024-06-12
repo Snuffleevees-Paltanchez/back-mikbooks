@@ -1,0 +1,61 @@
+name: backend-deploy
+
+on:
+  push:
+    branches: [main, deploy]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  PRIVATE_SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
+  SERVER_PUBLIC_IP: ${{ secrets.AWS_PUBLIC_KEY }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::590183879466:role/deploy-final
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR Public
+        id: login-ecr-public
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry-type: public
+
+      - name: Build, tag, and push docker image to Amazon ECR Public (api)
+        env:
+          REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
+          REGISTRY_ALIAS: r8s7y4q1
+          REPOSITORY: mikbooks
+          IMAGE_TAG: latest
+        run: |
+          docker build -f Dockerfile.prod -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
+      - name: Deploy docker image to EC2
+        env:
+          REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
+          REPOSITORY: mikbooks
+          IMAGE_TAG: latest
+          AWS_DEFAULT_REGION: us-east-1
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SERVER_PUBLIC_IP }}
+          username: ubuntu
+          key: ${{ env.PRIVATE_SSH_KEY }}
+          envs: PRIVATE_SSH_KEY,REGISTRY,REPOSITORY,IMAGE_TAG,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION,AWS_REGION
+          script: |-
+            sudo docker compose -f docker-compose-prod.yaml down web || true
+            sudo docker compose -f docker-compose-prod.yaml pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
+            sudo docker compose -f docker-compose-prod.yaml up -d
