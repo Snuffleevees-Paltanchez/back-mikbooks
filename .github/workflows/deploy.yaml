@@ -41,7 +41,7 @@ jobs:
           REPOSITORY: mikbooks
           IMAGE_TAG: latest
         run: |
-          docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
+          docker build -f Dockerfile.prod -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
       - name: Deploy docker image to EC2
         env:
