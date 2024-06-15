@@ -51,7 +51,11 @@ docker compose up
 
 ### Local
 
-To run the app locally, you need to have a postgres database running on your machine. You can run it using docker or install it on your machine.
+To run the app locally, you need to have a postgres database running on your machine. You can run it using docker or install it on your machine. And have the db updated with the schema, you can use the following command to run the migrations:
+
+```bash
+npx prisma migrate dev
+```
 
 To run the app locally, you can use one of the following commands:
 
