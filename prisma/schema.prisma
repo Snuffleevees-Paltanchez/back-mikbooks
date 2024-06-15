@@ -56,7 +56,7 @@ model Book {
 
   prices    Price[]
   favorites Favorite[]
-  raitings  Rating[]
+  ratings  Rating[]
 
   @@map("books")
 }

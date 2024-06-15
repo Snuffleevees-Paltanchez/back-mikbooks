@@ -13,7 +13,10 @@ export class PriceService {
           platformId: data.platformId,
         },
       },
-      update: {},
+      update: {
+        price: data.price,
+        date: data.date,
+      },
       create: {
         bookId: data.bookId,
         platformId: data.platformId,
