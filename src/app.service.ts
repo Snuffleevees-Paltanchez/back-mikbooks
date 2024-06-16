@@ -6,7 +6,7 @@ export class AppService {
     return 'Hello World!'
   }
 
-  getAuthorizedContent(): string {
-    return 'You are authorized to view this content!'
+  getProtectedContent(): string {
+    return 'This is protected content!'
   }
 }

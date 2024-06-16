@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common'
+import { Controller, Get, UseGuards } from '@nestjs/common'
 import { AppService } from './app.service'
+import { AuthGuard } from './auth/auth.guard'
 
 @Controller()
 export class AppController {
@@ -10,8 +11,13 @@ export class AppController {
     return this.appService.getHello()
   }
 
-  @Get('/authorized')
-  getAuthorizedContent(): string {
-    return this.appService.getAuthorizedContent()
+  /**
+   * Only authenticated users can access this route. This does not mean that the user is an admin
+   * or has any other role, just that they are authenticated.
+   */
+  @UseGuards(AuthGuard)
+  @Get('/protected')
+  getProtectedContent(): string {
+    return this.appService.getProtectedContent()
   }
 }
