@@ -9,4 +9,9 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello()
   }
+
+  @Get('/authorized')
+  getAuthorizedContent(): string {
+    return this.appService.getAuthorizedContent()
+  }
 }
