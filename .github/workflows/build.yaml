@@ -2,6 +2,7 @@ name: Build
 
 on:
   pull_request:
+    types: [opened, ready_for_review, synchronize, reopened]
     branches:
       - main
       - dev
@@ -15,6 +16,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
     environment:
       name: build
     steps:
