@@ -26,6 +26,12 @@ services:
 
     env_file:
       - .env.production.local
+    
+    command:
+       sh -c "
+        npx prisma migrate dev
+        && node dist/main.js
+      "
 
     ports:
       - "3000:3000"
