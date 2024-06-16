@@ -26,12 +26,12 @@ POSTGRES_DB=postgres
 
 DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public"
 
-AUTH0_DOMAIN=your_domain_auth0
-AUTH0_AUDIENCE=your_audience
+ISSUER_BASE_URL=your_auth0_issuer_url
+AUDIENCE=your_auth0_audience
 
 ```
 
-Please feel free to ask to someone from the team to provide you with the values for the `AUTH0_DOMAIN` and `AUTH0_AUDIENCE` variables ([@AlfreMK](https://github.com/AlfreMK)).
+Please feel free to ask to someone from the team to provide you with the values for the Auth0 variables ([@AlfreMK](https://github.com/AlfreMK)).
 
 To access the app locally you can use the following url:
 
