@@ -12,11 +12,9 @@ export class PriceService {
         id: parseInt(id),
       },
     })
-
     if (!existingPrice) {
       throw new NotFoundException(`Price with ID ${id} not found`)
     }
-
     return this.prisma.price.update({
       where: {
         id: existingPrice.id,
@@ -25,5 +23,13 @@ export class PriceService {
         price: priceData.price,
       },
     })
+  }
+
+  async deletePrice(id: number) {
+    const deletedPrice = await this.prisma.price.update({
+      where: { id },
+      data: { isDeleted: true },
+    })
+    return deletedPrice
   }
 }

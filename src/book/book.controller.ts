@@ -17,7 +17,7 @@ export class BookController {
       throw new NotFoundException(`Book with id ${id} not found`)
     }
     return {
-      message: 'Book marked asdeleted successfully',
+      message: 'Book marked as deleted successfully',
       data: deletedBook,
     }
   }
