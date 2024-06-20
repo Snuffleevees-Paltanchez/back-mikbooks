@@ -1,38 +1,38 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PriceController } from '../src/price/price.controller';
-import { PriceService } from '../src/price/price.service';
-import { NotFoundException } from '@nestjs/common';
-import { priceDto } from '../src/price/dto';
+import { Test, TestingModule } from '@nestjs/testing'
+import { PriceController } from '../src/price/price.controller'
+import { PriceService } from '../src/price/price.service'
+import { NotFoundException } from '@nestjs/common'
+import { priceDto } from '../src/price/dto'
 
 class MockPriceService {
   private prices = [
     { id: 1, bookId: 1, platformId: 1, price: 50, isDeleted: false },
     { id: 2, bookId: 2, platformId: 2, price: 60, isDeleted: false },
-  ];
+  ]
 
   async deletePrice(id: number) {
-    const index = this.prices.findIndex(price => price.id === id);
+    const index = this.prices.findIndex((price) => price.id === id)
     if (index !== -1) {
-      this.prices[index].isDeleted = true;
-      return this.prices[index];
+      this.prices[index].isDeleted = true
+      return this.prices[index]
     } else {
-      return null;
+      return null
     }
   }
 
   async updatePrice(id: number, priceData: priceDto) {
-    const index = this.prices.findIndex(price => price.id === id);
+    const index = this.prices.findIndex((price) => price.id === id)
     if (index !== -1) {
-      this.prices[index].price = priceData.price;
-      return this.prices[index];
+      this.prices[index].price = priceData.price
+      return this.prices[index]
     } else {
-      return null;
+      return null
     }
   }
 }
 
 describe('PriceController', () => {
-  let controller: PriceController;
+  let controller: PriceController
   //let priceService: MockPriceService;
 
   beforeEach(async () => {
@@ -44,20 +44,20 @@ describe('PriceController', () => {
           useClass: MockPriceService,
         },
       ],
-    }).compile();
+    }).compile()
 
-    controller = module.get<PriceController>(PriceController);
+    controller = module.get<PriceController>(PriceController)
     //priceService = module.get<PriceService, MockPriceService>(PriceService);
-  });
+  })
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
+    expect(controller).toBeDefined()
+  })
 
   describe('deletePrice', () => {
     it('should mark a price as deleted', async () => {
-      const priceId = 1;
-      const result = await controller.deletePrice(priceId);
+      const priceId = 1
+      const result = await controller.deletePrice(priceId)
       expect(result).toEqual({
         message: 'Price marked as deleted successfully',
         data: {
@@ -67,22 +67,22 @@ describe('PriceController', () => {
           bookId: 1,
           platformId: 1,
         },
-      });
-    });
+      })
+    })
 
     it('should throw NotFoundException if price does not exist', async () => {
-      const invalidPriceId = 999;
+      const invalidPriceId = 999
       await expect(controller.deletePrice(invalidPriceId)).rejects.toThrowError(
         NotFoundException,
-      );
-    });
-  });
+      )
+    })
+  })
 
   // TO DO
-  
+
   // describe('updatePrice', () => {
   //   it('should update the price successfully', async () => {
-  //     const priceId = '1'; 
+  //     const priceId = '1';
   //     const updatedPriceData: priceDto = {
   //       bookId: 1,
   //       platformId: 1,
@@ -90,7 +90,7 @@ describe('PriceController', () => {
   //       date: new Date(),
   //       productUrl: 'https://example.com/product/1',
   //     };
-  //     const result = await controller.updatePrice(priceId.toString(), updatedPriceData); 
+  //     const result = await controller.updatePrice(priceId.toString(), updatedPriceData);
   //     expect(result).toEqual({
   //       id: 1,
   //       price: 75.5,
@@ -111,4 +111,4 @@ describe('PriceController', () => {
   //     );
   //   });
   // });
-});
+})

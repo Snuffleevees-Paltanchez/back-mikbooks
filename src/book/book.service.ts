@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
-import { BookDto } from './dto'
+import { BookDto, BookFilterDto } from './dto'
 
 @Injectable()
 export class BookService {
@@ -22,6 +22,97 @@ export class BookService {
           },
         },
       })
+    }
+    return book
+  }
+  async getAllBooks(page: number = 1, limit: number = 20, filter: BookFilterDto) {
+    const { title, authorId, authorName, isbn, category, minPrice, maxPrice } = filter
+
+    const filterConditions: any = {}
+
+    if (title) {
+      filterConditions.title = { contains: title, mode: 'insensitive' }
+    }
+
+    filterConditions.authorId = authorId ? authorId : undefined
+
+    if (authorName) {
+      filterConditions.author = {
+        name: { contains: authorName, mode: 'insensitive' },
+      }
+    }
+    filterConditions.isbn = isbn ? isbn : undefined
+
+    if (category) {
+      filterConditions.categories = {
+        some: { name: { contains: category, mode: 'insensitive' } },
+      }
+    }
+    if (minPrice || maxPrice) {
+      filterConditions.prices = {
+        some: {
+          price: {},
+        },
+      }
+      if (minPrice) {
+        filterConditions.prices.some.price.gte = minPrice
+      }
+      if (maxPrice) {
+        filterConditions.prices.some.price.lte = maxPrice
+      }
+    }
+
+    const offset = (page - 1) * limit
+
+    const books = await this.prisma.book.findMany({
+      where: filterConditions,
+      include: {
+        categories: true,
+        author: true,
+        prices: true,
+      },
+      skip: offset,
+      take: limit,
+    })
+
+    const totalBooks = await this.prisma.book.count({
+      where: filterConditions,
+    })
+
+    return {
+      total: totalBooks,
+      page: page,
+      limit: limit,
+      data: books,
+    }
+  }
+
+  async getBookById(id: number) {
+    const book = await this.prisma.book.findUnique({
+      where: { id },
+      include: {
+        categories: true,
+        author: true,
+        prices: true,
+      },
+    })
+    if (!book) {
+      throw new NotFoundException(`Book with id ${id} not found`)
+    }
+    return book
+  }
+
+  async getBookByISBN(isbn: string) {
+    const book = await this.prisma.book.findUnique({
+      where: { isbn },
+      include: {
+        categories: true,
+        author: true,
+        prices: true,
+      },
+    })
+    if (!book) {
+      throw new NotFoundException(`Book with ISBN ${isbn} not found`)
     }
     return book
   }
