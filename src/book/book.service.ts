@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { BookDto } from './dto'
 
@@ -25,35 +25,10 @@ export class BookService {
     }
     return book
   }
-  async updateBook(id: number, data: BookDto) {
-    const { title, authorId, isbn, publishedDate, description, imgUrl, categories } = data
-
-    try {
-      const updatedBook = await this.prisma.book.update({
-        where: { id },
-        data: {
-          title,
-          authorId,
-          isbn,
-          publicationDate: publishedDate,
-          description,
-          imgUrl,
-          categories: {
-            set: categories
-              ? categories.map((category) => ({ name: category }))
-              : undefined,
-          },
-        },
-      })
-      return updatedBook
-    } catch (error) {
-      throw new NotFoundException(`Book with id ${id} not found`)
-    }
-  }
-
   async deleteBook(id: number) {
-    const deletedBook = await this.prisma.book.delete({
+    const deletedBook = await this.prisma.book.update({
       where: { id },
+      data: { isDeleted: true },
     })
     return deletedBook
   }

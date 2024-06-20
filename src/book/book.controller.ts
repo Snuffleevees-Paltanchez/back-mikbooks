@@ -1,39 +1,23 @@
-import {
-  Controller,
-  Put,
-  Delete,
-  Param,
-  Body,
-  NotFoundException,
-  ValidationPipe,
-} from '@nestjs/common'
+import { UseGuards } from '@nestjs/common'
+import { Controller, Delete, Param, NotFoundException } from '@nestjs/common'
 import { BookService } from './book.service'
-import { BookDto } from './dto'
+import { AuthGuard } from '../auth/auth.guard'
+import { PermissionsGuard } from '../auth/permissions.guard'
+import { AuthPermissions } from '../auth/auth.permissions'
 
 @Controller('books')
 export class BookController {
   constructor(private readonly bookService: BookService) {}
 
-  @Put(':id')
-  async updateBook(
-    @Param('id') id: string,
-    @Body(new ValidationPipe()) bookDto: BookDto,
-  ) {
-    const updatedBook = await this.bookService.updateBook(parseInt(id, 10), bookDto)
-    if (!updatedBook) {
-      throw new NotFoundException(`Book with id ${id} not found`)
-    }
-    return updatedBook
-  }
-
   @Delete(':id')
+  @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
   async deleteBook(@Param('id') id: number) {
     const deletedBook = await this.bookService.deleteBook(id)
     if (!deletedBook) {
       throw new NotFoundException(`Book with id ${id} not found`)
     }
     return {
-      message: 'Book deleted successfully',
+      message: 'Book marked asdeleted successfully',
       data: deletedBook,
     }
   }

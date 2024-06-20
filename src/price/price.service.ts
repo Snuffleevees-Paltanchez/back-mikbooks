@@ -1,28 +1,28 @@
-import { Injectable } from '@nestjs/common'
-import { PrismaService } from 'src/prisma/prisma.service'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { PrismaService } from '../prisma/prisma.service'
 import { priceDto } from './dto'
 
 @Injectable()
 export class PriceService {
   constructor(private prisma: PrismaService) {}
-  async findOrCreate(data: priceDto) {
-    return this.prisma.price.upsert({
+
+  async updatePrice(id: string, priceData: priceDto) {
+    const existingPrice = await this.prisma.price.findUnique({
       where: {
-        bookId_platformId: {
-          bookId: data.bookId,
-          platformId: data.platformId,
-        },
+        id: parseInt(id),
       },
-      update: {
-        price: data.price,
-        date: data.date,
+    })
+
+    if (!existingPrice) {
+      throw new NotFoundException(`Price with ID ${id} not found`)
+    }
+
+    return this.prisma.price.update({
+      where: {
+        id: existingPrice.id,
       },
-      create: {
-        bookId: data.bookId,
-        platformId: data.platformId,
-        price: data.price,
-        date: data.date,
-        productUrl: data.productUrl,
+      data: {
+        price: priceData.price,
       },
     })
   }
