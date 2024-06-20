@@ -56,6 +56,9 @@ export class PriceService {
       where: { id },
       data: { isDeleted: true },
     })
+    if (!deletedPrice) {
+      throw new NotFoundException(`Price with ID ${id} not found`)
+    }
     return deletedPrice
   }
 }

@@ -121,6 +121,9 @@ export class BookService {
       where: { id },
       data: { isDeleted: true },
     })
+    if (!deletedBook) {
+      throw new NotFoundException(`Book with ID ${id} not found`)
+    }
     return deletedBook
   }
 }
