@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { PriceController } from '../src/price/price.controller'
-import { PriceService } from '../src/price/price.service'
+import { PriceController } from '../../src/price/price.controller'
+import { PriceService } from '../../src/price/price.service'
 import { NotFoundException } from '@nestjs/common'
-import { priceDto } from '../src/price/dto'
+import { priceDto } from '../../src/price/dto'
 
 class MockPriceService {
   private prices = [

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { BookController } from '../src/book/book.controller'
-import { BookService } from '../src/book/book.service'
+import { BookController } from '../../src/book/book.controller'
+import { BookService } from '../../src/book/book.service'
 import { NotFoundException } from '@nestjs/common'
 
 class MockBookService {
