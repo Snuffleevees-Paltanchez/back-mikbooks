@@ -25,14 +25,14 @@ export class PriceController {
 
   @Delete(':id')
   @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
-  async deleteBook(@Param('id') id: number) {
-    const deletedBook = await this.priceService.deletePrice(id)
-    if (!deletedBook) {
-      throw new NotFoundException(`Book with id ${id} not found`)
+  async deletePrice(@Param('id') id: number) {
+    const deletedPrice = await this.priceService.deletePrice(id)
+    if (!deletedPrice) {
+      throw new NotFoundException(`Price with id ${id} not found`)
     }
     return {
-      message: 'Book marked as deleted successfully',
-      data: deletedBook,
+      message: 'Price marked as deleted successfully',
+      data: deletedPrice,
     }
   }
 }
