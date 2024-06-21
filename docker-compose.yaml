@@ -22,7 +22,8 @@ services:
       - .env.production.local
     command:
        sh -c "
-        npx prisma migrate dev
+        npx prisma generate
+        && npx prisma migrate dev
         && node dist/main.js
       "
     ports:
