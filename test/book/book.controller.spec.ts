@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { BookController } from '../book.controller'
-import { BookService } from '../book.service'
-import { BookDto } from '../dto/book.dto'
-import { PrismaService } from '../../prisma/prisma.service'
+import { BookController } from '../../src/book/book.controller'
+import { BookService } from '../../src/book/book.service'
+import { BookDto } from '../../src/book/dto/book.dto'
+import { PrismaService } from '../../src/prisma/prisma.service'
 
 describe('BookController', () => {
   let controller: BookController
