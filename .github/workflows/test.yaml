@@ -2,14 +2,29 @@ name: coverage
 
 on: 
   pull_request:
-    branches:
-      - main
-      - dev
+    types: [opened, ready_for_review, synchronize, reopened]
+    branches: [main, dev]
   workflow_dispatch:
+
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
+    environment:
+      name: qa
+    services:
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+
     steps:
       - uses: actions/checkout@v3
       - uses: ArtiomTr/jest-coverage-report-action@v2

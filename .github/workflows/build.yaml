@@ -2,6 +2,7 @@ name: Build
 
 on:
   pull_request:
+    types: [opened, ready_for_review, synchronize, reopened]
     branches:
       - main
       - dev
@@ -15,9 +16,14 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
+    environment:
+      name: build
     steps:
       - uses: actions/checkout@v3
       - name: Build docker image
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: docker build -f Dockerfile.prod -t $IMAGE_NAME:$IMAGE_TAG .
 
     # TODO Add a step to push the image to a registry (e.g. ECR)
