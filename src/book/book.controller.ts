@@ -56,8 +56,7 @@ export class BookController {
   @ApiOperation({ summary: 'Get book by ISBN' })
   @ApiResponse({ status: 200, description: 'Book found', type: BookDto })
   @ApiResponse({ status: 404, description: 'Book not found' })
-  async getBookByIsbn(@Param() { isbn }: GetBookByISBNDto) {
-
+  async getBookByISBN(@Param() { isbn }: GetBookByISBNDto) {
     const book = await this.bookService.getBookByISBN(isbn)
     if (!book) {
       throw new NotFoundException(`Book with isbn ${isbn} not found`)
