@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { PrismaService } from 'src/prisma/prisma.service'
-import { BookDto, BookFilterDto } from './dto'
+import { PrismaService } from '../prisma/prisma.service'
+import { BookDto, BookFilterDto, UpdateBookDto } from './dto'
 
 @Injectable()
 export class BookService {
@@ -9,24 +9,29 @@ export class BookService {
   async findOrCreate(data: BookDto) {
     let book = await this.prisma.book.findUnique({ where: { isbn: data.isbn } })
     if (!book) {
-      book = await this.prisma.book.create({
-        data: {
-          title: data.title,
-          isbn: data.isbn,
-          authorId: data.authorId,
-          description: data.description ? data.description : null,
-          publicationDate: data.publishedDate ? new Date(data.publishedDate) : null,
-          imgUrl: data.imgUrl ? data.imgUrl : null,
-          categories: {
-            connect: data.categories?.map((category) => ({ name: category })),
-          },
-        },
-      })
+      book = await this.createBook(data)
     }
     return book
   }
 
-  async getAllBooks(page: number = 1, limit: number = 20, filter: BookFilterDto) {
+  async createBook(data: BookDto) {
+    const book = await this.prisma.book.create({
+      data: {
+        title: data.title,
+        isbn: data.isbn,
+        authorId: data.authorId,
+        description: data.description ? data.description : null,
+        publicationDate: data.publishedDate ? new Date(data.publishedDate) : null,
+        imgUrl: data.imgUrl ? data.imgUrl : null,
+        categories: {
+          connect: data.categories?.map((category) => ({ name: category })),
+        },
+      },
+    })
+    return book
+  }
+
+  async getAllBooks(page: number = 1, limit: number = 20, filter: BookFilterDto = {}) {
     const { title, authorId, authorName, isbn, category, minPrice, maxPrice } = filter
 
     const filterConditions: any = {}
@@ -118,7 +123,7 @@ export class BookService {
     return book
   }
 
-  async updateBook(id: number, data: BookDto) {
+  async updateBook(id: number, data: UpdateBookDto) {
     const { title, authorId, isbn, publishedDate, description, imgUrl, categories } = data
 
     try {

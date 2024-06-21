@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
   Put,
   Delete,
   Param,
@@ -35,12 +36,17 @@ export class BookController {
   }
 
   @Get('isbn/:isbn')
-  async getBookByIsbn(@Param() { isbn }: GetBookByISBNDto) {
+  async getBookByISBN(@Param() { isbn }: GetBookByISBNDto) {
     const book = await this.bookService.getBookByISBN(isbn)
     if (!book) {
       throw new NotFoundException(`Book with isbn ${isbn} not found`)
     }
     return book
+  }
+
+  @Post()
+  async createBook(@Body() bookDto: BookDto) {
+    return this.bookService.createBook(bookDto)
   }
 
   @Put(':id')
