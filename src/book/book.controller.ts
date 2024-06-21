@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
   Put,
   Delete,
   Param,
@@ -56,11 +57,17 @@ export class BookController {
   @ApiResponse({ status: 200, description: 'Book found', type: BookDto })
   @ApiResponse({ status: 404, description: 'Book not found' })
   async getBookByIsbn(@Param() { isbn }: GetBookByISBNDto) {
+
     const book = await this.bookService.getBookByISBN(isbn)
     if (!book) {
       throw new NotFoundException(`Book with isbn ${isbn} not found`)
     }
     return book
+  }
+
+  @Post()
+  async createBook(@Body() bookDto: BookDto) {
+    return this.bookService.createBook(bookDto)
   }
 
   @Put(':id')
