@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
-import { CategoriesDto, CategoryDto, CategoryFilterDto } from './dto'
+import { CategoriesDto, CategoryDto } from './dto'
 
 @Injectable()
 export class CategoryService {
@@ -38,11 +38,7 @@ export class CategoryService {
     return allCategories
   }
 
-  async getAllCategories(
-    page: number = 1,
-    limit: number = 50,
-    filter: CategoryFilterDto = {},
-  ) {
+  async getAllCategories(page: number = 1, limit: number = 50, filter: any = {}) {
     const { name } = filter
 
     const filterConditions: any = {}
