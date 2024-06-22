@@ -65,6 +65,9 @@ class CategoriesResponse {
   @ApiProperty()
   limit: number
 
+  @ApiProperty()
+  hasNextPage: boolean
+
   @ApiProperty({ type: [CategoryDtoResponse] })
   data: CategoryDtoResponse[]
 }

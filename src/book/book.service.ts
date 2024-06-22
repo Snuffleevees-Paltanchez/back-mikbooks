@@ -89,6 +89,7 @@ export class BookService {
       total: totalBooks,
       page: page,
       limit: limit,
+      hasNextPage: totalBooks > offset + limit,
       data: books,
     }
   }

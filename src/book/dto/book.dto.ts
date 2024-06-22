@@ -163,6 +163,9 @@ export class BooksResponse {
   @ApiProperty()
   limit: number
 
+  @ApiProperty()
+  hasNextPage: boolean
+
   @ApiProperty({ type: [BookDto] })
   data: BookDto[]
 }

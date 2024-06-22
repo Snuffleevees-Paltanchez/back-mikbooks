@@ -70,6 +70,7 @@ export class CategoryService {
       total: total,
       page: page,
       limit: limit,
+      hasNextPage: total > offset + limit,
       data: categories,
     }
   }
