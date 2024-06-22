@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
-import { categoriesDto, categoryDto } from './dto'
+import { CategoriesDto, CategoryDto } from './dto'
 
 @Injectable()
 export class CategoryService {
   constructor(private prisma: PrismaService) {}
 
-  async findOrCreate(categoryData: categoriesDto): Promise<categoryDto[]> {
+  async findOrCreate(categoryData: CategoriesDto): Promise<CategoryDto[]> {
     const categoriesArray = this.parseCategories(categoryData.categories)
     if (!categoriesArray) {
       return []
@@ -36,5 +36,37 @@ export class CategoryService {
       return category.trim()
     })
     return allCategories
+  }
+
+  async getAllCategories(page: number = 1, limit: number = 50, filter: any = {}) {
+    const { name } = filter
+
+    const filterConditions: any = {}
+
+    if (name) {
+      filterConditions.name = { contains: name, mode: 'insensitive' }
+    }
+
+    const offset = (page - 1) * limit
+
+    const categories = await this.prisma.category.findMany({
+      where: filterConditions,
+      skip: offset,
+      take: limit,
+      select: {
+        id: true,
+        name: true,
+        isDeleted: true,
+      },
+    })
+    const total = await this.prisma.category.count({
+      where: filterConditions,
+    })
+    return {
+      total: total,
+      page: page,
+      limit: limit,
+      data: categories,
+    }
   }
 }
