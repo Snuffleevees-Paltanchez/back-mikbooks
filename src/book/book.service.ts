@@ -32,7 +32,8 @@ export class BookService {
   }
 
   async getAllBooks(page: number = 1, limit: number = 20, filter: BookFilterDto = {}) {
-    const { title, authorId, authorName, isbn, category, minPrice, maxPrice } = filter
+    const { title, authorId, authorName, isbn, category, minPrice, maxPrice, isDeleted } =
+      filter
 
     const filterConditions: any = {}
 
@@ -66,6 +67,11 @@ export class BookService {
       if (maxPrice) {
         filterConditions.prices.some.price.lte = maxPrice
       }
+    }
+
+    // Given that we get a string from the query, we need to convert it to a boolean
+    if (isDeleted === 'true' || isDeleted === 'false') {
+      filterConditions.isDeleted = isDeleted === 'true'
     }
 
     const offset = (page - 1) * limit

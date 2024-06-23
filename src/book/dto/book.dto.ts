@@ -96,6 +96,11 @@ export class BookFilterDto {
   @Min(0)
   @ApiProperty({ required: false, description: 'Filter by maximum price' })
   maxPrice?: number
+
+  // We can't use IsBoolean here because the query parameter is a string
+  @IsOptional()
+  @ApiProperty({ required: false, description: 'Filter by deleted status' })
+  isDeleted?: string
 }
 
 export class GetBooksDto extends BookFilterDto {
