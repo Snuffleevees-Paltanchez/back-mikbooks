@@ -57,6 +57,16 @@ export class BookController {
     return book
   }
 
+  @Get('recommendations/:isbn')
+  @ApiTags('Books')
+  @ApiOperation({ summary: 'Get book recommendations by ISBN' })
+  @ApiResponse({ status: 200, description: 'List of recommended books', type: [BookDto] })
+  @ApiResponse({ status: 404, description: 'Book not found' })
+  async getBookRecommendationsByISBN(@Param() { isbn }: GetBookByISBNDto) {
+    const recommendations = await this.bookService.getBookRecommendationsByISBN(isbn)
+    return recommendations
+  }
+
   @Post()
   async createBook(@Body() bookDto: BookDto) {
     return this.bookService.createBook(bookDto)

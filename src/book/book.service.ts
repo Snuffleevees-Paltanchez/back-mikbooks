@@ -124,6 +124,38 @@ export class BookService {
     return book
   }
 
+  async getBookRecommendationsByISBN(isbn: string) {
+    const book = await this.prisma.book.findUnique({
+      where: { isbn },
+      include: {
+        categories: true,
+        author: true,
+      },
+    })
+    if (!book) {
+      throw new NotFoundException(`Book with ISBN ${isbn} not found`)
+    }
+    const recommendations = await this.prisma.book.findMany({
+      where: {
+        categories: {
+          some: {
+            name: {
+              in: book.categories.map((category) => category.name),
+            },
+          },
+        },
+        isbn: { not: isbn },
+      },
+      include: {
+        categories: true,
+        author: true,
+        prices: true,
+      },
+      take: 5,
+    })
+    return recommendations
+  }
+
   async updateBook(id: number, data: UpdateBookDto) {
     const { title, authorId, isbn, publishedDate, description, imgUrl, categories } = data
 
