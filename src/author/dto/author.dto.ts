@@ -18,14 +18,17 @@ class AuthorDto {
 class AuthorDtoResponse {
   @IsNotEmpty()
   @IsNumber()
+  @ApiProperty({ example: 1 })
   id: number
 
   @IsNotEmpty()
   @IsString()
+  @ApiProperty({ example: 'Author Name' })
   name: string
 
   @IsNotEmpty()
   @IsBoolean()
+  @ApiProperty({ example: false })
   isDeleted: boolean
 }
 
