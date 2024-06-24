@@ -1,5 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common'
-import { AuthorsResponse, GetAuthorsDto } from './dto'
+import { AuthorsResponse, GetAuthorsDto, AuthorWithBooksCountDto } from './dto'
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger'
 import { AuthorService } from './author.service'
 
@@ -22,6 +22,13 @@ export class AuthorController {
   }
 
   @Get('most-books')
+  @ApiTags('Authors')
+  @ApiOperation({ summary: 'Get authors with most books' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of authors with most books',
+    type: [AuthorWithBooksCountDto],
+  })
   async getAuthorsWithMostBooks() {
     const authors = await this.authorService.getAuthorsWithMostBooks()
     return authors

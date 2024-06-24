@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import { BookDto, BookFilterDto, UpdateBookDto } from './dto'
+import { applyFilterMapping } from '../utils'
 
 @Injectable()
 export class BookService {
@@ -32,47 +33,20 @@ export class BookService {
   }
 
   async getAllBooks(page: number = 1, limit: number = 20, filter: BookFilterDto = {}) {
-    const { title, authorId, authorName, isbn, category, minPrice, maxPrice, isDeleted } =
-      filter
-
-    const filterConditions: any = {}
-
-    if (title) {
-      filterConditions.title = { contains: title, mode: 'insensitive' }
+    const filterMappings = {
+      title: (value: string) => ({ contains: value, mode: 'insensitive' }),
+      authorId: (value: number) => value,
+      authorName: (value: string) => ({ name: { contains: value, mode: 'insensitive' } }),
+      isbn: (value: string) => value,
+      category: (value: string) => ({
+        some: { name: { contains: value, mode: 'insensitive' } },
+      }),
+      minPrice: (value: number) => ({ some: { price: { gte: value } } }),
+      maxPrice: (value: number) => ({ some: { price: { lte: value } } }),
+      isDeleted: (value: string) => value === 'true',
     }
 
-    filterConditions.authorId = authorId ? authorId : undefined
-
-    if (authorName) {
-      filterConditions.author = {
-        name: { contains: authorName, mode: 'insensitive' },
-      }
-    }
-    filterConditions.isbn = isbn ? isbn : undefined
-
-    if (category) {
-      filterConditions.categories = {
-        some: { name: { contains: category, mode: 'insensitive' } },
-      }
-    }
-    if (minPrice || maxPrice) {
-      filterConditions.prices = {
-        some: {
-          price: {},
-        },
-      }
-      if (minPrice) {
-        filterConditions.prices.some.price.gte = minPrice
-      }
-      if (maxPrice) {
-        filterConditions.prices.some.price.lte = maxPrice
-      }
-    }
-
-    // Given that we get a string from the query, we need to convert it to a boolean
-    if (isDeleted === 'true' || isDeleted === 'false') {
-      filterConditions.isDeleted = isDeleted === 'true'
-    }
+    const filterConditions = applyFilterMapping(filter, filterMappings)
 
     const offset = (page - 1) * limit
 

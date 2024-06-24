@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { CategoriesDto, CategoryDto, CategoryFilterDto } from './dto'
+import { applyFilterMapping } from '../utils'
 
 @Injectable()
 export class CategoryService {
@@ -43,13 +44,11 @@ export class CategoryService {
     limit: number = 50,
     filter: CategoryFilterDto = {},
   ) {
-    const { name } = filter
-
-    const filterConditions: any = {}
-
-    if (name) {
-      filterConditions.name = { contains: name, mode: 'insensitive' }
+    const filterMappings = {
+      name: (value: string) => ({ contains: value, mode: 'insensitive' }),
     }
+
+    const filterConditions = applyFilterMapping(filter, filterMappings)
 
     const offset = (page - 1) * limit
 

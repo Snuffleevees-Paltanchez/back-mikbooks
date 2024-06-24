@@ -72,4 +72,27 @@ class GetAuthorsDto extends AuthorFilterDto {
   limit?: number
 }
 
-export { AuthorDto, AuthorsResponse, AuthorFilterDto, GetAuthorsDto }
+class AuthorWithBooksCountDto {
+  @IsNotEmpty()
+  @IsNumber()
+  @ApiProperty({ example: 1 })
+  id: number
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({ example: 'Author Name' })
+  name: string
+
+  @IsNotEmpty()
+  @IsNumber()
+  @ApiProperty({ example: 10 })
+  bookscount: number
+}
+
+export {
+  AuthorDto,
+  AuthorsResponse,
+  AuthorFilterDto,
+  GetAuthorsDto,
+  AuthorWithBooksCountDto,
+}

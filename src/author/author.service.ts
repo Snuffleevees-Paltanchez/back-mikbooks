@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { AuthorDto, AuthorFilterDto } from './dto'
+import { applyFilterMapping } from '../utils'
 
 @Injectable()
 export class AuthorService {
@@ -19,13 +20,11 @@ export class AuthorService {
     limit: number = 50,
     filter: AuthorFilterDto = {},
   ) {
-    const { name } = filter
-
-    const filterConditions: any = {}
-
-    if (name) {
-      filterConditions.name = { contains: name, mode: 'insensitive' }
+    const filterMappings = {
+      name: (value: string) => ({ contains: value, mode: 'insensitive' }),
     }
+
+    const filterConditions = applyFilterMapping(filter, filterMappings)
 
     const offset = (page - 1) * limit
 
@@ -75,5 +74,5 @@ export class AuthorService {
 
 const json = (param: any): any =>
   JSON.stringify(param, (key, value) =>
-    typeof value === 'bigint' ? value.toString() : value,
+    typeof value === 'bigint' ? parseInt(value.toString()) : value,
   )
