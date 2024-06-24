@@ -62,6 +62,7 @@ describe('BookService', () => {
       total: 1,
       page: 1,
       limit: 20,
+      hasNextPage: false,
       data: [
         {
           id: 1,

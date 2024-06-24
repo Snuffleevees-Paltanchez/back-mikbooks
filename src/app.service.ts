@@ -10,7 +10,7 @@ export class AppService {
     return 'This is protected content!'
   }
 
-  getAdminMessage = (): string => {
+  getAdminMessage(): string {
     return 'This is an admin message!'
   }
 }

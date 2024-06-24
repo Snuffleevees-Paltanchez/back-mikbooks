@@ -25,16 +25,9 @@ export class BookController {
     description: 'List of books',
     type: BooksResponse,
   })
-  @ApiResponse({
-    status: 404,
-    description: 'No books found',
-  })
   async getAllBooks(@Query() query: GetBooksDto) {
     const { page, limit, ...filters } = query
     const books = await this.bookService.getAllBooks(page, limit, filters)
-    if (!books || books.total === 0) {
-      throw new NotFoundException('No books found')
-    }
     return books
   }
 
@@ -62,6 +55,16 @@ export class BookController {
       throw new NotFoundException(`Book with isbn ${isbn} not found`)
     }
     return book
+  }
+
+  @Get('recommendations/:isbn')
+  @ApiTags('Books')
+  @ApiOperation({ summary: 'Get book recommendations by ISBN' })
+  @ApiResponse({ status: 200, description: 'List of recommended books', type: [BookDto] })
+  @ApiResponse({ status: 404, description: 'Book not found' })
+  async getBookRecommendationsByISBN(@Param() { isbn }: GetBookByISBNDto) {
+    const recommendations = await this.bookService.getBookRecommendationsByISBN(isbn)
+    return recommendations
   }
 
   @Post()

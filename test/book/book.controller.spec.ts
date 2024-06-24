@@ -88,6 +88,7 @@ describe('BookController', () => {
       data: [expectedBook],
       total: 1,
       page: 1,
+      hasNextPage: false,
       limit: 20,
     }
     const query = {}

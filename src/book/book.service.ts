@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import { BookDto, BookFilterDto, UpdateBookDto } from './dto'
+import { applyFilterMapping } from '../utils'
 
 @Injectable()
 export class BookService {
@@ -32,41 +33,20 @@ export class BookService {
   }
 
   async getAllBooks(page: number = 1, limit: number = 20, filter: BookFilterDto = {}) {
-    const { title, authorId, authorName, isbn, category, minPrice, maxPrice } = filter
-
-    const filterConditions: any = {}
-
-    if (title) {
-      filterConditions.title = { contains: title, mode: 'insensitive' }
+    const filterMappings = {
+      title: (value: string) => ({ contains: value, mode: 'insensitive' }),
+      authorId: (value: number) => value,
+      authorName: (value: string) => ({ name: { contains: value, mode: 'insensitive' } }),
+      isbn: (value: string) => value,
+      category: (value: string) => ({
+        some: { name: { contains: value, mode: 'insensitive' } },
+      }),
+      minPrice: (value: number) => ({ some: { price: { gte: value } } }),
+      maxPrice: (value: number) => ({ some: { price: { lte: value } } }),
+      isDeleted: (value: string) => value === 'true',
     }
 
-    filterConditions.authorId = authorId ? authorId : undefined
-
-    if (authorName) {
-      filterConditions.author = {
-        name: { contains: authorName, mode: 'insensitive' },
-      }
-    }
-    filterConditions.isbn = isbn ? isbn : undefined
-
-    if (category) {
-      filterConditions.categories = {
-        some: { name: { contains: category, mode: 'insensitive' } },
-      }
-    }
-    if (minPrice || maxPrice) {
-      filterConditions.prices = {
-        some: {
-          price: {},
-        },
-      }
-      if (minPrice) {
-        filterConditions.prices.some.price.gte = minPrice
-      }
-      if (maxPrice) {
-        filterConditions.prices.some.price.lte = maxPrice
-      }
-    }
+    const filterConditions = applyFilterMapping(filter, filterMappings)
 
     const offset = (page - 1) * limit
 
@@ -89,6 +69,7 @@ export class BookService {
       total: totalBooks,
       page: page,
       limit: limit,
+      hasNextPage: totalBooks > offset + limit,
       data: books,
     }
   }
@@ -121,6 +102,38 @@ export class BookService {
       throw new NotFoundException(`Book with ISBN ${isbn} not found`)
     }
     return book
+  }
+
+  async getBookRecommendationsByISBN(isbn: string) {
+    const book = await this.prisma.book.findUnique({
+      where: { isbn },
+      include: {
+        categories: true,
+        author: true,
+      },
+    })
+    if (!book) {
+      throw new NotFoundException(`Book with ISBN ${isbn} not found`)
+    }
+    const recommendations = await this.prisma.book.findMany({
+      where: {
+        categories: {
+          some: {
+            name: {
+              in: book.categories.map((category) => category.name),
+            },
+          },
+        },
+        isbn: { not: isbn },
+      },
+      include: {
+        categories: true,
+        author: true,
+        prices: true,
+      },
+      take: 5,
+    })
+    return recommendations
   }
 
   async updateBook(id: number, data: UpdateBookDto) {
