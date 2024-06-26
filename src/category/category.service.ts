@@ -3,6 +3,10 @@ import { PrismaService } from 'src/prisma/prisma.service'
 import { CategoriesDto, CategoryDto, CategoryFilterDto } from './dto'
 import { applyFilterMapping } from '../utils'
 
+const filterMappings = {
+  name: (value: string) => ({ contains: value, mode: 'insensitive' }),
+}
+
 @Injectable()
 export class CategoryService {
   constructor(private prisma: PrismaService) {}
@@ -44,10 +48,6 @@ export class CategoryService {
     limit: number = 50,
     filter: CategoryFilterDto = {},
   ) {
-    const filterMappings = {
-      name: (value: string) => ({ contains: value, mode: 'insensitive' }),
-    }
-
     const filterConditions = applyFilterMapping(filter, filterMappings)
 
     const offset = (page - 1) * limit
