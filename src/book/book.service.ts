@@ -3,6 +3,28 @@ import { PrismaService } from '../prisma/prisma.service'
 import { BookDto, BookFilterDto, UpdateBookDto } from './dto'
 import { applyFilterMapping } from '../utils'
 
+/**
+ * Filter mappings for book
+ */
+const filterMappings = {
+  title: (value: string) => ({ contains: value, mode: 'insensitive' }),
+  authorId: (value: number) => value,
+  author: (value: string) => ({ name: { contains: value, mode: 'insensitive' } }),
+  isbn: (value: string) => value,
+  categories: (value: string) => ({
+    some: { name: { contains: value, mode: 'insensitive' } },
+  }),
+  prices: ({ minPrice, maxPrice }: { minPrice?: number; maxPrice?: number }) => ({
+    some: {
+      price: {
+        gte: minPrice ? minPrice : undefined,
+        lte: maxPrice ? maxPrice : undefined,
+      },
+    },
+  }),
+  isDeleted: (value: string) => value === 'true',
+}
+
 @Injectable()
 export class BookService {
   constructor(private prisma: PrismaService) {}
@@ -33,20 +55,13 @@ export class BookService {
   }
 
   async getAllBooks(page: number = 1, limit: number = 20, filter: BookFilterDto = {}) {
-    const filterMappings = {
-      title: (value: string) => ({ contains: value, mode: 'insensitive' }),
-      authorId: (value: number) => value,
-      authorName: (value: string) => ({ name: { contains: value, mode: 'insensitive' } }),
-      isbn: (value: string) => value,
-      category: (value: string) => ({
-        some: { name: { contains: value, mode: 'insensitive' } },
-      }),
-      minPrice: (value: number) => ({ some: { price: { gte: value } } }),
-      maxPrice: (value: number) => ({ some: { price: { lte: value } } }),
-      isDeleted: (value: string) => value === 'true',
+    const parsedFilter = {
+      ...filter,
+      author: filter.authorName,
+      categories: filter.category,
+      prices: { minPrice: filter.minPrice, maxPrice: filter.maxPrice },
     }
-
-    const filterConditions = applyFilterMapping(filter, filterMappings)
+    const filterConditions = applyFilterMapping(parsedFilter, filterMappings)
 
     const offset = (page - 1) * limit
 

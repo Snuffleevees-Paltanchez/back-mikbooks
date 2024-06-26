@@ -3,6 +3,10 @@ import { PrismaService } from 'src/prisma/prisma.service'
 import { AuthorDto, AuthorFilterDto } from './dto'
 import { applyFilterMapping } from '../utils'
 
+const filterMappings = {
+  name: (value: string) => ({ contains: value, mode: 'insensitive' }),
+}
+
 @Injectable()
 export class AuthorService {
   constructor(private prisma: PrismaService) {}
@@ -20,10 +24,6 @@ export class AuthorService {
     limit: number = 50,
     filter: AuthorFilterDto = {},
   ) {
-    const filterMappings = {
-      name: (value: string) => ({ contains: value, mode: 'insensitive' }),
-    }
-
     const filterConditions = applyFilterMapping(filter, filterMappings)
 
     const offset = (page - 1) * limit
