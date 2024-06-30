@@ -81,6 +81,7 @@ export class BookController {
   @ApiOperation({ summary: 'Update book by id' })
   @ApiResponse({ status: 200, description: 'Book updated', type: BookDto })
   @ApiResponse({ status: 404, description: 'Book not found' })
+  @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
   async updateBook(@Param('id') id: number, @Body() bookDto: BookDto) {
     const updatedBook = await this.bookService.updateBook(id, bookDto)
     if (!updatedBook) {

@@ -1,6 +1,9 @@
-import { Controller, Get } from '@nestjs/common'
+import { Controller, Get, UseGuards } from '@nestjs/common'
 import { DbService } from './db.service'
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { AuthGuard } from '../auth/auth.guard'
+import { PermissionsGuard } from '../auth/permissions.guard'
+import { AuthPermissions } from '../auth/auth.permissions'
 
 @Controller('db')
 export class DbController {
@@ -10,6 +13,7 @@ export class DbController {
   @ApiTags('DB')
   @ApiOperation({ summary: 'Populate the database with sample data' })
   @ApiResponse({ status: 200, description: 'Database populated', type: Promise<void> })
+  @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
   populate() {
     console.log('DbController.populate')
     return this.dbService.populate()
