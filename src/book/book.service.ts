@@ -1,6 +1,29 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
-import { BookDto, BookFilterDto } from './dto'
+import { BookDto, BookFilterDto, UpdateBookDto } from './dto'
+import { applyFilterMapping } from '../utils'
+
+/**
+ * Filter mappings for book
+ */
+const filterMappings = {
+  title: (value: string) => ({ contains: value, mode: 'insensitive' }),
+  authorId: (value: number) => value,
+  author: (value: string) => ({ name: { contains: value, mode: 'insensitive' } }),
+  isbn: (value: string) => value,
+  categories: (value: string) => ({
+    some: { name: { contains: value, mode: 'insensitive' } },
+  }),
+  prices: ({ minPrice, maxPrice }: { minPrice?: number; maxPrice?: number }) => ({
+    some: {
+      price: {
+        gte: minPrice ? minPrice : undefined,
+        lte: maxPrice ? maxPrice : undefined,
+      },
+    },
+  }),
+  isDeleted: (value: string) => value === 'true',
+}
 
 @Injectable()
 export class BookService {
@@ -9,58 +32,36 @@ export class BookService {
   async findOrCreate(data: BookDto) {
     let book = await this.prisma.book.findUnique({ where: { isbn: data.isbn } })
     if (!book) {
-      book = await this.prisma.book.create({
-        data: {
-          title: data.title,
-          isbn: data.isbn,
-          authorId: data.authorId,
-          description: data.description ? data.description : null,
-          publicationDate: data.publishedDate ? new Date(data.publishedDate) : null,
-          imgUrl: data.imgUrl ? data.imgUrl : null,
-          categories: {
-            connect: data.categories?.map((category) => ({ name: category })),
-          },
-        },
-      })
+      book = await this.createBook(data)
     }
     return book
   }
-  async getAllBooks(page: number = 1, limit: number = 20, filter: BookFilterDto) {
-    const { title, authorId, authorName, isbn, category, minPrice, maxPrice } = filter
 
-    const filterConditions: any = {}
-
-    if (title) {
-      filterConditions.title = { contains: title, mode: 'insensitive' }
-    }
-
-    filterConditions.authorId = authorId ? authorId : undefined
-
-    if (authorName) {
-      filterConditions.author = {
-        name: { contains: authorName, mode: 'insensitive' },
-      }
-    }
-    filterConditions.isbn = isbn ? isbn : undefined
-
-    if (category) {
-      filterConditions.categories = {
-        some: { name: { contains: category, mode: 'insensitive' } },
-      }
-    }
-    if (minPrice || maxPrice) {
-      filterConditions.prices = {
-        some: {
-          price: {},
+  async createBook(data: BookDto) {
+    const book = await this.prisma.book.create({
+      data: {
+        title: data.title,
+        isbn: data.isbn,
+        authorId: data.authorId,
+        description: data.description ? data.description : null,
+        publicationDate: data.publishedDate ? new Date(data.publishedDate) : null,
+        imgUrl: data.imgUrl ? data.imgUrl : null,
+        categories: {
+          connect: data.categories?.map((category) => ({ name: category })),
         },
-      }
-      if (minPrice) {
-        filterConditions.prices.some.price.gte = minPrice
-      }
-      if (maxPrice) {
-        filterConditions.prices.some.price.lte = maxPrice
-      }
+      },
+    })
+    return book
+  }
+
+  async getAllBooks(page: number = 1, limit: number = 20, filter: BookFilterDto = {}) {
+    const parsedFilter = {
+      ...filter,
+      author: filter.authorName,
+      categories: filter.category,
+      prices: { minPrice: filter.minPrice, maxPrice: filter.maxPrice },
     }
+    const filterConditions = applyFilterMapping(parsedFilter, filterMappings)
 
     const offset = (page - 1) * limit
 
@@ -83,6 +84,7 @@ export class BookService {
       total: totalBooks,
       page: page,
       limit: limit,
+      hasNextPage: totalBooks > offset + limit,
       data: books,
     }
   }
@@ -116,6 +118,65 @@ export class BookService {
     }
     return book
   }
+
+  async getBookRecommendationsByISBN(isbn: string) {
+    const book = await this.prisma.book.findUnique({
+      where: { isbn },
+      include: {
+        categories: true,
+        author: true,
+      },
+    })
+    if (!book) {
+      throw new NotFoundException(`Book with ISBN ${isbn} not found`)
+    }
+    const recommendations = await this.prisma.book.findMany({
+      where: {
+        categories: {
+          some: {
+            name: {
+              in: book.categories.map((category) => category.name),
+            },
+          },
+        },
+        isbn: { not: isbn },
+      },
+      include: {
+        categories: true,
+        author: true,
+        prices: true,
+      },
+      take: 5,
+    })
+    return recommendations
+  }
+
+  async updateBook(id: number, data: UpdateBookDto) {
+    const { title, authorId, isbn, publishedDate, description, imgUrl, categories } = data
+
+    try {
+      const updatedBook = await this.prisma.book.update({
+        where: { id },
+        data: {
+          title,
+          authorId,
+          isbn,
+          publicationDate: publishedDate,
+          description,
+          imgUrl,
+          categories: {
+            set: categories
+              ? categories.map((category) => ({ name: category }))
+              : undefined,
+          },
+        },
+      })
+      return updatedBook
+    } catch (error) {
+      throw new NotFoundException(`Book with id ${id} not found`)
+    }
+  }
+
   async deleteBook(id: number) {
     const deletedBook = await this.prisma.book.update({
       where: { id },
