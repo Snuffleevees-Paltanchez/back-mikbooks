@@ -105,4 +105,29 @@ describe('BookController', () => {
     jest.spyOn(service, 'getBookByISBN').mockImplementation(async () => expectedBook)
     expect(await controller.getBookByISBN({ isbn: '123-456-789' })).toEqual(expectedBook)
   })
+
+  it('should mark a book as deleted', async () => {
+    expectedBook.isDeleted = true
+    jest.spyOn(service, 'deleteBook').mockImplementation(async () => expectedBook)
+    const result = await controller.deleteBook(1)
+    expect(result).toEqual({
+      message: 'Book marked as deleted successfully',
+      data: expectedBook,
+    })
+    expect(result.data.isDeleted).toBe(true)
+  })
+
+  // it('should throw NotFoundException if book does not exist', async () => {
+  //   jest
+  //     .spyOn(service, 'deleteBook')
+  //     .mockImplementation(async () =>
+  //       Promise.reject(new NotFoundException(`Book with id 2 not found`)),
+  //     )
+  //   try {
+  //     await controller.deleteBook(2)
+  //   } catch (e) {
+  //     expect(e).toBeInstanceOf(NotFoundException)
+  //     expect(e.message).toBe('Book with id 2 not found')
+  //   }
+  // })
 })

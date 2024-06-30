@@ -178,9 +178,13 @@ export class BookService {
   }
 
   async deleteBook(id: number) {
-    const deletedBook = await this.prisma.book.delete({
+    const deletedBook = await this.prisma.book.update({
       where: { id },
+      data: { isDeleted: true },
     })
+    if (!deletedBook) {
+      throw new NotFoundException(`Book with ID ${id} not found`)
+    }
     return deletedBook
   }
 }

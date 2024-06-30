@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common'
 import { csvDataDto } from './dto'
 import { libraries } from './constants'
 import { parse } from 'csv-parse'
-import { AuthorService } from 'src/author/author.service'
-import { PlatformService } from 'src/platform/platform.service'
-import { BookService } from 'src/book/book.service'
-import { PriceService } from 'src/price/price.service'
-import { CategoryService } from 'src/category/category.service'
+import { AuthorService } from '../author/author.service'
+import { PlatformService } from '../platform/platform.service'
+import { BookService } from '../book/book.service'
+import { PriceService } from '../price/price.service'
+import { CategoryService } from '../category/category.service'
 
 @Injectable()
 export class DbService {

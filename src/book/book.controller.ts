@@ -9,8 +9,12 @@ import {
   Body,
   NotFoundException,
 } from '@nestjs/common'
+import { UseGuards } from '@nestjs/common'
 import { BookService } from './book.service'
 import { BookDto, GetBooksDto, GetBookByISBNDto, BooksResponse } from './dto'
+import { AuthGuard } from '../auth/auth.guard'
+import { PermissionsGuard } from '../auth/permissions.guard'
+import { AuthPermissions } from '../auth/auth.permissions'
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger'
 
 @Controller('books')
@@ -77,6 +81,7 @@ export class BookController {
   @ApiOperation({ summary: 'Update book by id' })
   @ApiResponse({ status: 200, description: 'Book updated', type: BookDto })
   @ApiResponse({ status: 404, description: 'Book not found' })
+  @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
   async updateBook(@Param('id') id: number, @Body() bookDto: BookDto) {
     const updatedBook = await this.bookService.updateBook(id, bookDto)
     if (!updatedBook) {
@@ -90,13 +95,14 @@ export class BookController {
   @ApiOperation({ summary: 'Delete book by id' })
   @ApiResponse({ status: 200, description: 'Book deleted', type: BookDto })
   @ApiResponse({ status: 404, description: 'Book not found' })
+  @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
   async deleteBook(@Param('id') id: number) {
     const deletedBook = await this.bookService.deleteBook(id)
     if (!deletedBook) {
       throw new NotFoundException(`Book with id ${id} not found`)
     }
     return {
-      message: 'Book deleted successfully',
+      message: 'Book marked as deleted successfully',
       data: deletedBook,
     }
   }
