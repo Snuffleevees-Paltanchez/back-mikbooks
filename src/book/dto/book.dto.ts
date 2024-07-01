@@ -10,9 +10,10 @@ import {
   MaxLength,
   Min,
   IsInt,
+  Max,
 } from 'class-validator'
 
-import { Type } from 'class-transformer'
+import { Type, Transform } from 'class-transformer'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class BookDto {
@@ -49,6 +50,18 @@ export class BookDto {
   @MaxLength(255)
   @ApiProperty({ example: 'https://example.com/book.jpg', nullable: true })
   imgUrl: string | null
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  @ApiProperty({ example: 4.5, nullable: true })
+  ratingAvg: number | null
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  @ApiProperty({ example: 100, nullable: true })
+  ratingCount: number | null
 
   @IsOptional()
   @IsArray()
@@ -96,6 +109,35 @@ export class BookFilterDto {
   @Min(0)
   @ApiProperty({ required: false, description: 'Filter by maximum price' })
   maxPrice?: number
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  @Min(1)
+  @ApiProperty({ required: false, description: 'Filter by minimum rating count' })
+  ratingCount?: number
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  @Min(0)
+  @Max(5)
+  @ApiProperty({ required: false, description: 'Filter by minimum rating average' })
+  minRatingAvg?: number
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  @Min(0)
+  @Max(5)
+  @ApiProperty({ required: false, description: 'Filter by maximum rating average' })
+  maxRatingAvg?: number
+
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => (value === 'true' ? 'asc' : 'desc'))
+  @ApiProperty({ required: false, description: 'Sort by rating' })
+  sortByRating?: string
 
   // We can't use IsBoolean here because the query parameter is a string
   @IsOptional()

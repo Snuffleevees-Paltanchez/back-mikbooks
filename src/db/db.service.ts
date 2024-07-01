@@ -70,6 +70,8 @@ export class DbService {
             publishedDate: record.PublishedDate,
             imgUrl: record.ImgUrl,
             categories: record.Categories,
+            ratingAvg: record.AvgRating,
+            ratingCount: record.RatingsCount,
           })
         }
       })

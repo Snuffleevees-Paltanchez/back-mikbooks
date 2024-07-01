@@ -24,6 +24,8 @@ describe('BookService', () => {
     imgUrl: 'https://test.com/image.jpg',
     categories: ['Test Category'],
     publishedDate: new Date(),
+    ratingAvg: 4.5,
+    ratingCount: 100,
   }
 
   beforeEach(async () => {

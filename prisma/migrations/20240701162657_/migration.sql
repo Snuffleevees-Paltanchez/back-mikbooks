@@ -10,19 +10,6 @@ CREATE TABLE "authors" (
 );
 
 -- CreateTable
-CREATE TABLE "ratings" (
-    "id" SERIAL NOT NULL,
-    "bookId" INTEGER NOT NULL,
-    "goodreadsUrl" VARCHAR(255) NOT NULL,
-    "rating" DOUBLE PRECISION NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
-
-    CONSTRAINT "ratings_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "books" (
     "id" SERIAL NOT NULL,
     "title" VARCHAR(255) NOT NULL,
@@ -31,6 +18,8 @@ CREATE TABLE "books" (
     "publicationDate" TIMESTAMP(3),
     "description" TEXT,
     "imgUrl" VARCHAR(255),
+    "ratingAvg" DOUBLE PRECISION DEFAULT 0,
+    "ratingCount" INTEGER DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
@@ -114,9 +103,6 @@ CREATE UNIQUE INDEX "_BookToCategory_AB_unique" ON "_BookToCategory"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_BookToCategory_B_index" ON "_BookToCategory"("B");
-
--- AddForeignKey
-ALTER TABLE "ratings" ADD CONSTRAINT "ratings_bookId_fkey" FOREIGN KEY ("bookId") REFERENCES "books"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "books" ADD CONSTRAINT "books_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "authors"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

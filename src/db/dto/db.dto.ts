@@ -63,6 +63,14 @@ class csvDataDto {
   @IsOptional()
   @IsArray()
   categories: string | null
+
+  @IsOptional()
+  @IsNumber()
+  ratingAvg: number | null
+
+  @IsOptional()
+  @IsNumber()
+  ratingCount: number | null
 }
 
 export { DbDto, csvDataDto }

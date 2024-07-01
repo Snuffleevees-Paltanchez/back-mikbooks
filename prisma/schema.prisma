@@ -25,19 +25,6 @@ model Author {
   @@map("authors")
 }
 
-model Rating {
-  id           Int      @id @default(autoincrement())
-  bookId       Int
-  goodreadsUrl String   @db.VarChar(255)
-  rating       Float
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  isDeleted    Boolean  @default(false)
-
-  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
-
-  @@map("ratings")
-}
 
 model Book {
   id              Int       @id @default(autoincrement())
@@ -47,6 +34,8 @@ model Book {
   publicationDate DateTime?
   description     String?   @db.Text
   imgUrl          String?   @db.VarChar(255)
+  ratingAvg       Float?    @default(0)
+  ratingCount     Int?      @default(0)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   isDeleted       Boolean   @default(false)
@@ -56,7 +45,6 @@ model Book {
 
   prices    Price[]
   favorites Favorite[]
-  ratings  Rating[]
 
   @@map("books")
 }

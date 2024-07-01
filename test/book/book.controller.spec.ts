@@ -38,6 +38,8 @@ describe('BookController', () => {
     isDeleted: false,
     categories: [],
     prices: [],
+    ratingAvg: 4.5,
+    ratingCount: 100,
   }
 
   beforeEach(async () => {
@@ -64,8 +66,9 @@ describe('BookController', () => {
       imgUrl: 'http://example.com/img.jpg',
       categories: ['Test Category'],
       publishedDate: new Date(),
+      ratingAvg: 4.5,
+      ratingCount: 100,
     }
-
     const expectedResult = {
       id: 1,
       title: 'Test Book',
@@ -77,8 +80,11 @@ describe('BookController', () => {
       createdAt: new Date(),
       updatedAt: new Date(),
       isDeleted: false,
+      categories: [],
+      prices: [],
+      ratingAvg: 4.5,
+      ratingCount: 100,
     }
-
     jest.spyOn(service, 'createBook').mockImplementation(async () => expectedResult)
     expect(await controller.createBook(testBook)).toEqual(expectedResult)
   })
