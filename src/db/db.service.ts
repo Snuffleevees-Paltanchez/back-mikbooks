@@ -104,7 +104,7 @@ export class DbService {
     await this.priceService.findOrCreate({
       bookId: book.id,
       platformId: platformId,
-      price: parseFloat(data.price.replace('$', '')),
+      price: parseFloat(data.price.replace(/[^0-9]/g, '')),
       date: new Date(),
       productUrl: data.link,
     })
