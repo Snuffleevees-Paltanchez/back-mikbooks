@@ -2,28 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import { BookDto, BookFilterDto, UpdateBookDto } from './dto'
 import { applyFilterMapping } from '../utils'
-
-/**
- * Filter mappings for book
- */
-const filterMappings = {
-  title: (value: string) => ({ contains: value, mode: 'insensitive' }),
-  authorId: (value: number) => value,
-  author: (value: string) => ({ name: { contains: value, mode: 'insensitive' } }),
-  isbn: (value: string) => value,
-  categories: (value: string) => ({
-    some: { name: { contains: value, mode: 'insensitive' } },
-  }),
-  prices: ({ minPrice, maxPrice }: { minPrice?: number; maxPrice?: number }) => ({
-    some: {
-      price: {
-        gte: minPrice ? minPrice : undefined,
-        lte: maxPrice ? maxPrice : undefined,
-      },
-    },
-  }),
-  isDeleted: (value: string) => value === 'true',
-}
+import { plainToClass } from 'class-transformer'
+import { filterMappings, parsedFilter, parseSort, sortMappings } from './utils'
 
 @Injectable()
 export class BookService {
@@ -38,6 +18,7 @@ export class BookService {
   }
 
   async createBook(data: BookDto) {
+    data = plainToClass(BookDto, data)
     const book = await this.prisma.book.create({
       data: {
         title: data.title,
@@ -46,6 +27,8 @@ export class BookService {
         description: data.description ? data.description : null,
         publicationDate: data.publishedDate ? new Date(data.publishedDate) : null,
         imgUrl: data.imgUrl ? data.imgUrl : null,
+        ratingAvg: data.ratingAvg ? data.ratingAvg : null,
+        ratingCount: data.ratingCount ? data.ratingCount : null,
         categories: {
           connect: data.categories?.map((category) => ({ name: category })),
         },
@@ -55,13 +38,10 @@ export class BookService {
   }
 
   async getAllBooks(page: number = 1, limit: number = 20, filter: BookFilterDto = {}) {
-    const parsedFilter = {
-      ...filter,
-      author: filter.authorName,
-      categories: filter.category,
-      prices: { minPrice: filter.minPrice, maxPrice: filter.maxPrice },
-    }
-    const filterConditions = applyFilterMapping(parsedFilter, filterMappings)
+    const parsedFilterBooks = parsedFilter(filter)
+    const filterConditions = applyFilterMapping(parsedFilterBooks, filterMappings)
+    const parseSortBooks = parseSort(filter)
+    const sortConditions = applyFilterMapping(parseSortBooks, sortMappings)
 
     const offset = (page - 1) * limit
 
@@ -72,6 +52,7 @@ export class BookService {
         author: true,
         prices: true,
       },
+      orderBy: sortConditions,
       skip: offset,
       take: limit,
     })

@@ -10,7 +10,6 @@ import { PlatformModule } from './platform/platform.module'
 import { FavoriteModule } from './favorite/favorite.module'
 import { PriceModule } from './price/price.module'
 import { AuthorModule } from './author/author.module'
-import { RatingModule } from './rating/rating.module'
 import { DbModule } from './db/db.module'
 import { CategoryModule } from './category/category.module'
 
@@ -26,7 +25,6 @@ import { CategoryModule } from './category/category.module'
     FavoriteModule,
     PriceModule,
     AuthorModule,
-    RatingModule,
     DbModule,
     CategoryModule,
   ],
