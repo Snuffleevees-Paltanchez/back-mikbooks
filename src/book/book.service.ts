@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import { BookDto, BookFilterDto, UpdateBookDto } from './dto'
-import { applyFilterMapping } from '../utils'
 import { plainToClass } from 'class-transformer'
-import { filterMappings, parsedFilter, parseSort, sortMappings } from './utils'
+import { getFilterConditions, getSortConditions } from './utils'
 
 @Injectable()
 export class BookService {
@@ -38,10 +37,8 @@ export class BookService {
   }
 
   async getAllBooks(page: number = 1, limit: number = 20, filter: BookFilterDto = {}) {
-    const parsedFilterBooks = parsedFilter(filter)
-    const filterConditions = applyFilterMapping(parsedFilterBooks, filterMappings)
-    const parseSortBooks = parseSort(filter)
-    const sortConditions = applyFilterMapping(parseSortBooks, sortMappings)
+    const filterConditions = getFilterConditions(filter)
+    const sortConditions = getSortConditions(filter)
 
     const offset = (page - 1) * limit
 

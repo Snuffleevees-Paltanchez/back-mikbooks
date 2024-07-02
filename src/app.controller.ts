@@ -3,7 +3,7 @@ import { AppService } from './app.service'
 import { AuthGuard } from './auth/auth.guard'
 import { PermissionsGuard } from './auth/permissions.guard'
 import { AuthPermissions } from './auth/auth.permissions'
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger'
 
 @Controller()
 export class AppController {
@@ -21,6 +21,7 @@ export class AppController {
    * Only authenticated users can access this route. This does not mean that the user is an admin
    * or has any other role, just that they are authenticated.
    */
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @ApiTags('API')
   @ApiOperation({ summary: 'Get Protected Content' })
@@ -33,6 +34,7 @@ export class AppController {
   /**
    * Only authenticated users with the read:admin-content permission can access this route.
    */
+  @ApiBearerAuth()
   @UseGuards(PermissionsGuard([AuthPermissions.READ_ADMIN]))
   @UseGuards(AuthGuard)
   @ApiTags('API')

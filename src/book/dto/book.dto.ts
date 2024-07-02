@@ -13,7 +13,7 @@ import {
   Max,
 } from 'class-validator'
 
-import { Type, Transform } from 'class-transformer'
+import { Type } from 'class-transformer'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class BookDto {
@@ -135,9 +135,8 @@ export class BookFilterDto {
 
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => (value === 'true' ? 'asc' : 'desc'))
   @ApiProperty({ required: false, description: 'Sort by rating' })
-  sortByRating?: string
+  sortByRating?: 'asc' | 'desc'
 
   // We can't use IsBoolean here because the query parameter is a string
   @IsOptional()

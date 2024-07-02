@@ -1,9 +1,10 @@
+import { applyFilterMapping } from '../../utils'
 import { BookFilterDto } from '../dto/book.dto'
 
 /**
  * Filter mappings for book
  */
-export const filterMappings = {
+const filterMappings = {
   title: (value: string) => ({ contains: value, mode: 'insensitive' }),
   authorId: (value: number) => value,
   author: (value: string) => ({ name: { contains: value, mode: 'insensitive' } }),
@@ -33,7 +34,7 @@ export const filterMappings = {
   isDeleted: (value: string) => value === 'true',
 }
 
-export const parsedFilter = (filter: BookFilterDto) => ({
+const parseFilter = (filter: BookFilterDto) => ({
   ...filter,
   author: filter.authorName,
   categories: filter.category,
@@ -41,10 +42,24 @@ export const parsedFilter = (filter: BookFilterDto) => ({
   ratingAvg: { minRatingAvg: filter.minRatingAvg, maxRatingAvg: filter.maxRatingAvg },
 })
 
-export const parseSort = (filter: BookFilterDto) => ({
+const parseSort = (filter: BookFilterDto) => ({
   ratingAvg: filter.sortByRating,
 })
 
-export const sortMappings = {
+const sortMappings = {
   ratingAvg: (value: string) => value,
 }
+
+/**
+ * Get filter conditions for book
+ * @param queryFilters
+ */
+export const getFilterConditions = (queryFilters: BookFilterDto) =>
+  applyFilterMapping(parseFilter(queryFilters), filterMappings)
+
+/**
+ * Get sort conditions for book
+ * @param queryFilters
+ */
+export const getSortConditions = (queryFilters: BookFilterDto) =>
+  applyFilterMapping(parseSort(queryFilters), sortMappings)
