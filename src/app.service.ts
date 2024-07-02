@@ -6,11 +6,11 @@ export class AppService {
     return 'Cors :( !'
   }
 
-  getProtectedContent(): string {
-    return 'This is protected content!'
+  getProtectedContent(): { message: string } {
+    return { message: 'This is protected content!' }
   }
 
-  getAdminMessage(): string {
-    return 'This is an admin message!'
+  getAdminContent(): { message: string } {
+    return { message: 'This is admin content!' }
   }
 }
