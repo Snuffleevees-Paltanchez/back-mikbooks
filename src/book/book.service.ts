@@ -129,6 +129,31 @@ export class BookService {
     return recommendations
   }
 
+  /**
+   * Get KPIs (Key Performance Indicators) for books
+   * @returns KPIs for books
+   */
+  async getBooksKpi() {
+    const totalBooks = await this.prisma.book.count()
+    const totalBooksMarkedAsDeleted = await this.prisma.book.count({
+      where: { isDeleted: true },
+    })
+    const totalPrices = await this.prisma.price.count()
+    const totalPricesMarkedAsDeleted = await this.prisma.price.count({
+      where: { isDeleted: true },
+    })
+    const totalAuthors = await this.prisma.author.count()
+    const totalCategories = await this.prisma.category.count()
+    return {
+      totalBooks,
+      totalBooksMarkedAsDeleted,
+      totalPrices,
+      totalPricesMarkedAsDeleted,
+      totalAuthors,
+      totalCategories,
+    }
+  }
+
   async updateBook(id: number, data: UpdateBookDto) {
     const { title, authorId, isbn, publishedDate, description, imgUrl, categories } = data
 

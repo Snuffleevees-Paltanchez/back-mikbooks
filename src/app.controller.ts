@@ -5,6 +5,10 @@ import { PermissionsGuard } from './auth/permissions.guard'
 import { AuthPermissions } from './auth/auth.permissions'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger'
 
+class Message {
+  message: string
+}
+
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
@@ -25,9 +29,9 @@ export class AppController {
   @UseGuards(AuthGuard)
   @ApiTags('API')
   @ApiOperation({ summary: 'Get Protected Content' })
-  @ApiResponse({ status: 200, description: 'Protected Content', type: String })
+  @ApiResponse({ status: 200, description: 'Protected Content', type: Message })
   @Get('/protected')
-  getProtectedContent(): string {
+  getProtectedContent(): { message: string } {
     return this.appService.getProtectedContent()
   }
 
@@ -39,9 +43,9 @@ export class AppController {
   @UseGuards(AuthGuard)
   @ApiTags('API')
   @ApiOperation({ summary: 'Get Admin Content' })
-  @ApiResponse({ status: 200, description: 'Admin Content', type: String })
+  @ApiResponse({ status: 200, description: 'Admin Content', type: Message })
   @Get('/admin')
-  getAdmin(): string {
-    return this.appService.getAdminMessage()
+  getAdminContent(): { message: string } {
+    return this.appService.getAdminContent()
   }
 }

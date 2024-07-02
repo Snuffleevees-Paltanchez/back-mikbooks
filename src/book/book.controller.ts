@@ -15,7 +15,7 @@ import { BookDto, GetBooksDto, GetBookByISBNDto, BooksResponse } from './dto'
 import { AuthGuard } from '../auth/auth.guard'
 import { PermissionsGuard } from '../auth/permissions.guard'
 import { AuthPermissions } from '../auth/auth.permissions'
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger'
 
 @Controller('books')
 export class BookController {
@@ -35,7 +35,15 @@ export class BookController {
     return books
   }
 
-  @Get(':id')
+  @Get('kpi')
+  @ApiTags('Books')
+  @ApiOperation({ summary: 'Get books KPI (Key Performance Indicators)' })
+  @ApiResponse({ status: 200, description: 'Books KPI', type: Object })
+  async getBooksKpi() {
+    return this.bookService.getBooksKpi()
+  }
+
+  @Get('id/:id')
   @ApiTags('Books')
   @ApiOperation({ summary: 'Get book by id' })
   @ApiResponse({ status: 200, description: 'Book found', type: BookDto })
@@ -72,12 +80,17 @@ export class BookController {
   }
 
   @Post()
+  @ApiTags('Books')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create a new book' })
+  @ApiResponse({ status: 201, description: 'Book created', type: BookDto })
   async createBook(@Body() bookDto: BookDto) {
     return this.bookService.createBook(bookDto)
   }
 
   @Put(':id')
   @ApiTags('Books')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update book by id' })
   @ApiResponse({ status: 200, description: 'Book updated', type: BookDto })
   @ApiResponse({ status: 404, description: 'Book not found' })
@@ -92,6 +105,7 @@ export class BookController {
 
   @Delete(':id')
   @ApiTags('Books')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete book by id' })
   @ApiResponse({ status: 200, description: 'Book deleted', type: BookDto })
   @ApiResponse({ status: 404, description: 'Book not found' })
