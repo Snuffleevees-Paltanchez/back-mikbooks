@@ -190,4 +190,15 @@ export class BookService {
     }
     return deletedBook
   }
+
+  async restoreBook(id: number) {
+    const book = await this.prisma.book.update({
+      where: { id },
+      data: { isDeleted: false },
+    })
+    if (!book) {
+      throw new NotFoundException(`Book with ID ${id} not found`)
+    }
+    return book
+  }
 }

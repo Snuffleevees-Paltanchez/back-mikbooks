@@ -120,4 +120,22 @@ export class BookController {
       data: deletedBook,
     }
   }
+
+  @Put('restore/:id')
+  @ApiTags('Books')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Restore book by id' })
+  @ApiResponse({ status: 200, description: 'Book restored', type: BookDto })
+  @ApiResponse({ status: 404, description: 'Book not found' })
+  @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
+  async restoreBook(@Param('id') id: number) {
+    const book = await this.bookService.restoreBook(id)
+    if (!book) {
+      throw new NotFoundException(`Book with id ${id} not found`)
+    }
+    return {
+      message: 'Book restored successfully',
+      data: book,
+    }
+  }
 }
