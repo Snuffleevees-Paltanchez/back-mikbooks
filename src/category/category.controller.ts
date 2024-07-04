@@ -3,12 +3,12 @@ import { CategoryService } from './category.service'
 import { CategoriesResponse, GetCategoriesDto } from './dto'
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger'
 
+@ApiTags('Categories')
 @Controller('categories')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Get()
-  @ApiTags('Categories')
   @ApiOperation({ summary: 'Get all categories' })
   @ApiResponse({
     status: 200,

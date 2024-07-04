@@ -6,12 +6,12 @@ import { PermissionsGuard } from '../auth/permissions.guard'
 import { AuthPermissions } from '../auth/auth.permissions'
 
 @ApiBearerAuth()
+@ApiTags('DB')
 @Controller('db')
 export class DbController {
   constructor(private dbService: DbService) {}
 
   @Get('populate')
-  @ApiTags('DB')
   @ApiOperation({ summary: 'Populate the database with sample data' })
   @ApiResponse({ status: 200, description: 'Database populated', type: Promise<void> })
   @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))

@@ -17,12 +17,12 @@ import { PermissionsGuard } from '../auth/permissions.guard'
 import { AuthPermissions } from '../auth/auth.permissions'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger'
 
+@ApiTags('Books')
 @Controller('books')
 export class BookController {
   constructor(private readonly bookService: BookService) {}
 
   @Get()
-  @ApiTags('Books')
   @ApiOperation({ summary: 'Get all books' })
   @ApiResponse({
     status: 200,
@@ -36,7 +36,6 @@ export class BookController {
   }
 
   @Get('kpi')
-  @ApiTags('Books')
   @ApiOperation({ summary: 'Get books KPI (Key Performance Indicators)' })
   @ApiResponse({ status: 200, description: 'Books KPI', type: Object })
   async getBooksKpi() {
@@ -44,7 +43,6 @@ export class BookController {
   }
 
   @Get('id/:id')
-  @ApiTags('Books')
   @ApiOperation({ summary: 'Get book by id' })
   @ApiResponse({ status: 200, description: 'Book found', type: BookDto })
   @ApiResponse({ status: 404, description: 'Book not found' })
@@ -57,7 +55,6 @@ export class BookController {
   }
 
   @Get('isbn/:isbn')
-  @ApiTags('Books')
   @ApiOperation({ summary: 'Get book by ISBN' })
   @ApiResponse({ status: 200, description: 'Book found', type: BookDto })
   @ApiResponse({ status: 404, description: 'Book not found' })
@@ -70,7 +67,6 @@ export class BookController {
   }
 
   @Get('recommendations/:isbn')
-  @ApiTags('Books')
   @ApiOperation({ summary: 'Get book recommendations by ISBN' })
   @ApiResponse({ status: 200, description: 'List of recommended books', type: [BookDto] })
   @ApiResponse({ status: 404, description: 'Book not found' })
@@ -80,7 +76,6 @@ export class BookController {
   }
 
   @Post()
-  @ApiTags('Books')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new book' })
   @ApiResponse({ status: 201, description: 'Book created', type: BookDto })
@@ -89,7 +84,6 @@ export class BookController {
   }
 
   @Put(':id')
-  @ApiTags('Books')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update book by id' })
   @ApiResponse({ status: 200, description: 'Book updated', type: BookDto })
@@ -104,7 +98,6 @@ export class BookController {
   }
 
   @Delete(':id')
-  @ApiTags('Books')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete book by id' })
   @ApiResponse({ status: 200, description: 'Book deleted', type: BookDto })
@@ -122,7 +115,6 @@ export class BookController {
   }
 
   @Put('restore/:id')
-  @ApiTags('Books')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Restore book by id' })
   @ApiResponse({ status: 200, description: 'Book restored', type: BookDto })
