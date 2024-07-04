@@ -199,6 +199,32 @@ export class UpdateBookDto {
   categories?: string[] | null
 }
 
+export class BooksKpi {
+  @IsNumber()
+  @ApiProperty()
+  totalBooks: number
+
+  @IsNumber()
+  @ApiProperty()
+  totalBooksMarkedAsDeleted: number
+
+  @IsNumber()
+  @ApiProperty()
+  totalPrices: number
+
+  @IsNumber()
+  @ApiProperty()
+  totalPricesMarkedAsDeleted: number
+
+  @IsNumber()
+  @ApiProperty()
+  totalAuthors: number
+
+  @IsNumber()
+  @ApiProperty()
+  totalCategories: number
+}
+
 export class BooksResponse {
   @ApiProperty()
   total: number

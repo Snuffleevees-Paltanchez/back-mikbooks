@@ -11,11 +11,12 @@ import {
 } from '@nestjs/common'
 import { UseGuards } from '@nestjs/common'
 import { BookService } from './book.service'
-import { BookDto, GetBooksDto, GetBookByISBNDto, BooksResponse } from './dto'
+import { BookDto, GetBooksDto, GetBookByISBNDto, BooksResponse, BooksKpi } from './dto'
 import { AuthGuard } from '../auth/auth.guard'
 import { PermissionsGuard } from '../auth/permissions.guard'
 import { AuthPermissions } from '../auth/auth.permissions'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger'
+import { ApiTags } from '@nestjs/swagger'
+import { ApiEndpoint } from 'src/common/decorators/common.docs.decorators'
 
 @ApiTags('Books')
 @Controller('books')
@@ -23,12 +24,7 @@ export class BookController {
   constructor(private readonly bookService: BookService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all books' })
-  @ApiResponse({
-    status: 200,
-    description: 'List of books',
-    type: BooksResponse,
-  })
+  @ApiEndpoint({ info: { summary: 'Get all books' }, type: BooksResponse })
   async getAllBooks(@Query() query: GetBooksDto) {
     const { page, limit, ...filters } = query
     const books = await this.bookService.getAllBooks(page, limit, filters)
@@ -36,16 +32,19 @@ export class BookController {
   }
 
   @Get('kpi')
-  @ApiOperation({ summary: 'Get books KPI (Key Performance Indicators)' })
-  @ApiResponse({ status: 200, description: 'Books KPI', type: Object })
+  @ApiEndpoint({
+    info: { summary: 'Get books Key Performance Indicators' },
+    type: BooksKpi,
+  })
   async getBooksKpi() {
     return this.bookService.getBooksKpi()
   }
 
   @Get('id/:id')
-  @ApiOperation({ summary: 'Get book by id' })
-  @ApiResponse({ status: 200, description: 'Book found', type: BookDto })
-  @ApiResponse({ status: 404, description: 'Book not found' })
+  @ApiEndpoint({
+    info: { summary: 'Get book by id', notFound: 'Book' },
+    type: BookDto,
+  })
   async getBookById(@Param('id') id: number) {
     const book = await this.bookService.getBookById(id)
     if (!book) {
@@ -55,9 +54,10 @@ export class BookController {
   }
 
   @Get('isbn/:isbn')
-  @ApiOperation({ summary: 'Get book by ISBN' })
-  @ApiResponse({ status: 200, description: 'Book found', type: BookDto })
-  @ApiResponse({ status: 404, description: 'Book not found' })
+  @ApiEndpoint({
+    info: { summary: 'Get book by ISBN', notFound: 'Book' },
+    type: BookDto,
+  })
   async getBookByISBN(@Param() { isbn }: GetBookByISBNDto) {
     const book = await this.bookService.getBookByISBN(isbn)
     if (!book) {
@@ -67,27 +67,27 @@ export class BookController {
   }
 
   @Get('recommendations/:isbn')
-  @ApiOperation({ summary: 'Get book recommendations by ISBN' })
-  @ApiResponse({ status: 200, description: 'List of recommended books', type: [BookDto] })
-  @ApiResponse({ status: 404, description: 'Book not found' })
+  @ApiEndpoint({
+    info: { summary: 'Get book recommendations by ISBN', notFound: 'Book' },
+    type: [BookDto],
+  })
   async getBookRecommendationsByISBN(@Param() { isbn }: GetBookByISBNDto) {
     const recommendations = await this.bookService.getBookRecommendationsByISBN(isbn)
     return recommendations
   }
 
   @Post()
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create a new book' })
-  @ApiResponse({ status: 201, description: 'Book created', type: BookDto })
+  @ApiEndpoint({ info: { summary: 'Create a new book' }, type: BookDto, auth: true })
   async createBook(@Body() bookDto: BookDto) {
     return this.bookService.createBook(bookDto)
   }
 
   @Put(':id')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update book by id' })
-  @ApiResponse({ status: 200, description: 'Book updated', type: BookDto })
-  @ApiResponse({ status: 404, description: 'Book not found' })
+  @ApiEndpoint({
+    info: { summary: 'Update book', notFound: 'book' },
+    type: BookDto,
+    auth: true,
+  })
   @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
   async updateBook(@Param('id') id: number, @Body() bookDto: BookDto) {
     const updatedBook = await this.bookService.updateBook(id, bookDto)
@@ -98,10 +98,11 @@ export class BookController {
   }
 
   @Delete(':id')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete book by id' })
-  @ApiResponse({ status: 200, description: 'Book deleted', type: BookDto })
-  @ApiResponse({ status: 404, description: 'Book not found' })
+  @ApiEndpoint({
+    info: { summary: 'Delete book', notFound: 'Book' },
+    type: BookDto,
+    auth: true,
+  })
   @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
   async deleteBook(@Param('id') id: number) {
     const deletedBook = await this.bookService.deleteBook(id)
@@ -115,10 +116,11 @@ export class BookController {
   }
 
   @Put('restore/:id')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Restore book by id' })
-  @ApiResponse({ status: 200, description: 'Book restored', type: BookDto })
-  @ApiResponse({ status: 404, description: 'Book not found' })
+  @ApiEndpoint({
+    info: { summary: 'Restore book', notFound: 'Book' },
+    type: BookDto,
+    auth: true,
+  })
   @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
   async restoreBook(@Param('id') id: number) {
     const book = await this.bookService.restoreBook(id)
