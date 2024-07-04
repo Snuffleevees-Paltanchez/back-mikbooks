@@ -51,7 +51,7 @@ class PriceDtoResponse extends PriceDto {
   isDeleted: boolean
 }
 
-class PriceDtoResponseChanded {
+class PriceDtoResponseChanged {
   @IsString()
   @ApiProperty({ example: 'Price updated successfully' })
   message: string
@@ -65,4 +65,4 @@ class EditPriceDto {
   price: number
 }
 
-export { PriceDto, EditPriceDto, PriceDtoResponse, PriceDtoResponseChanded }
+export { PriceDto, EditPriceDto, PriceDtoResponse, PriceDtoResponseChanged }

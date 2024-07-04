@@ -16,7 +16,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  @ApiEndpoint({ info: { summary: 'Get Hello' }, type: Message })
+  @ApiEndpoint({ summary: 'Get Hello', type: Message })
   getHello(): string {
     return this.appService.getHello()
   }
@@ -26,7 +26,7 @@ export class AppController {
    * or has any other role, just that they are authenticated.
    */
   @Get('/protected')
-  @ApiEndpoint({ info: { summary: 'Get Protected Content' }, auth: true, type: Message })
+  @ApiEndpoint({ summary: 'Get Protected Content', auth: true, type: Message })
   @UseGuards(AuthGuard)
   getProtectedContent(): { message: string } {
     return this.appService.getProtectedContent()
@@ -36,7 +36,7 @@ export class AppController {
    * Only authenticated users with the read:admin-content permission can access this route.
    */
   @Get('/admin')
-  @ApiEndpoint({ info: { summary: 'Get Admin Content' }, auth: true, type: Message })
+  @ApiEndpoint({ summary: 'Get Admin Content', auth: true, type: Message })
   @UseGuards(AuthGuard)
   @UseGuards(PermissionsGuard([AuthPermissions.READ_ADMIN]))
   getAdminContent(): { message: string } {

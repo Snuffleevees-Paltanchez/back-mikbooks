@@ -9,7 +9,7 @@ import {
   Delete,
 } from '@nestjs/common'
 import { PriceService } from './price.service'
-import { EditPriceDto, PriceDtoResponse, PriceDtoResponseChanded } from './dto'
+import { EditPriceDto, PriceDtoResponse, PriceDtoResponseChanged } from './dto'
 import { AuthGuard } from '../auth/auth.guard'
 import { PermissionsGuard } from '../auth/permissions.guard'
 import { AuthPermissions } from '../auth/auth.permissions'
@@ -22,10 +22,7 @@ export class PriceController {
   constructor(private readonly priceService: PriceService) {}
 
   @Get(':id')
-  @ApiEndpoint({
-    info: { summary: 'Get price by id', notFound: 'Price' },
-    type: PriceDtoResponse,
-  })
+  @ApiEndpoint({ summary: 'Get price by id', notFound: 'Price', type: PriceDtoResponse })
   async getPrice(@Param('id') id: string) {
     const price = await this.priceService.getPrice(id)
     if (!price) {
@@ -35,7 +32,7 @@ export class PriceController {
   }
 
   @Put(':id')
-  @ApiEndpoint({ info: { summary: 'Update price' }, auth: true, type: PriceDtoResponse })
+  @ApiEndpoint({ summary: 'Update price', auth: true, type: PriceDtoResponse })
   @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
   async updatePrice(@Param('id') id: string, @Body() priceData: EditPriceDto) {
     return this.priceService.updatePrice(id, priceData)
@@ -43,9 +40,10 @@ export class PriceController {
 
   @Delete(':id')
   @ApiEndpoint({
-    info: { summary: 'Delete price', notFound: 'Price' },
+    summary: 'Delete price',
+    notFound: 'Price',
     auth: true,
-    type: PriceDtoResponseChanded,
+    type: PriceDtoResponseChanged,
   })
   @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
   async deletePrice(@Param('id') id: number) {
@@ -61,9 +59,10 @@ export class PriceController {
 
   @Put('restore/:id')
   @ApiEndpoint({
-    info: { summary: 'Restore price', notFound: 'Price' },
+    summary: 'Restore price',
+    notFound: 'Price',
     auth: true,
-    type: PriceDtoResponseChanded,
+    type: PriceDtoResponseChanged,
   })
   @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
   async restorePrice(@Param('id') id: number) {

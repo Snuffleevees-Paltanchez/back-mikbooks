@@ -2,25 +2,29 @@ import { applyDecorators } from '@nestjs/common'
 import { ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger'
 
 interface ApiEndpointOptions {
-  info: { notFound?: string; summary: string }
+  summary: string
+  notFound?: string
   type: any
   auth?: boolean
 }
 
-export function ApiEndpoint({ info, type, auth = false }: ApiEndpointOptions) {
+export function ApiEndpoint({
+  summary,
+  notFound,
+  type,
+  auth = false,
+}: ApiEndpointOptions) {
   const decorators = [
-    ApiOperation({ summary: info.summary }),
+    ApiOperation({ summary: summary }),
     ApiResponse({
       status: 200,
-      description: `${info.summary} successfully`,
+      description: `${summary} successfully`,
       type: type,
     }),
   ]
 
-  if (info.notFound) {
-    decorators.push(
-      ApiResponse({ status: 404, description: `${info.notFound} not found` }),
-    )
+  if (notFound) {
+    decorators.push(ApiResponse({ status: 404, description: `${notFound} not found` }))
   }
 
   if (auth) {

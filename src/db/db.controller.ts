@@ -13,7 +13,7 @@ export class DbController {
   constructor(private dbService: DbService) {}
 
   @Get('populate')
-  @ApiEndpoint({ info: { summary: 'Populate db with sample data' }, type: Promise<void> })
+  @ApiEndpoint({ summary: 'Populate db with sample data', type: Promise<void> })
   @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
   populate() {
     return this.dbService.populate()

@@ -10,7 +10,7 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Get()
-  @ApiEndpoint({ info: { summary: 'Get all categories' }, type: CategoriesResponse })
+  @ApiEndpoint({ summary: 'Get all categories', type: CategoriesResponse })
   async getAllCategories(@Query() query: GetCategoriesDto) {
     const { page, limit, ...filters } = query
     const books = await this.categoryService.getAllCategories(page, limit, filters)

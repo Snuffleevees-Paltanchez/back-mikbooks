@@ -10,7 +10,7 @@ export class AuthorController {
   constructor(private readonly authorService: AuthorService) {}
 
   @Get()
-  @ApiEndpoint({ info: { summary: 'Get all authors' }, type: AuthorsResponse })
+  @ApiEndpoint({ summary: 'Get all authors', type: AuthorsResponse })
   async getAllCategories(@Query() query: GetAuthorsDto) {
     const { page, limit, ...filters } = query
     const books = await this.authorService.getAllAuthors(page, limit, filters)
@@ -19,7 +19,7 @@ export class AuthorController {
 
   @Get('most-books')
   @ApiEndpoint({
-    info: { summary: 'Get authors with most books' },
+    summary: 'Get authors with most books',
     type: [AuthorWithBooksCountDto],
   })
   async getAuthorsWithMostBooks() {

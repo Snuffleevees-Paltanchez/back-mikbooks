@@ -24,7 +24,7 @@ export class BookController {
   constructor(private readonly bookService: BookService) {}
 
   @Get()
-  @ApiEndpoint({ info: { summary: 'Get all books' }, type: BooksResponse })
+  @ApiEndpoint({ summary: 'Get all books', type: BooksResponse })
   async getAllBooks(@Query() query: GetBooksDto) {
     const { page, limit, ...filters } = query
     const books = await this.bookService.getAllBooks(page, limit, filters)
@@ -32,19 +32,13 @@ export class BookController {
   }
 
   @Get('kpi')
-  @ApiEndpoint({
-    info: { summary: 'Get books Key Performance Indicators' },
-    type: BooksKpi,
-  })
+  @ApiEndpoint({ summary: 'Get books Key Performance Indicators', type: BooksKpi })
   async getBooksKpi() {
     return this.bookService.getBooksKpi()
   }
 
   @Get('id/:id')
-  @ApiEndpoint({
-    info: { summary: 'Get book by id', notFound: 'Book' },
-    type: BookDto,
-  })
+  @ApiEndpoint({ summary: 'Get book by id', notFound: 'Book', type: BookDto })
   async getBookById(@Param('id') id: number) {
     const book = await this.bookService.getBookById(id)
     if (!book) {
@@ -54,10 +48,7 @@ export class BookController {
   }
 
   @Get('isbn/:isbn')
-  @ApiEndpoint({
-    info: { summary: 'Get book by ISBN', notFound: 'Book' },
-    type: BookDto,
-  })
+  @ApiEndpoint({ summary: 'Get book by ISBN', notFound: 'Book', type: BookDto })
   async getBookByISBN(@Param() { isbn }: GetBookByISBNDto) {
     const book = await this.bookService.getBookByISBN(isbn)
     if (!book) {
@@ -68,7 +59,8 @@ export class BookController {
 
   @Get('recommendations/:isbn')
   @ApiEndpoint({
-    info: { summary: 'Get book recommendations by ISBN', notFound: 'Book' },
+    summary: 'Get book recommendations by ISBN',
+    notFound: 'Book',
     type: [BookDto],
   })
   async getBookRecommendationsByISBN(@Param() { isbn }: GetBookByISBNDto) {
@@ -77,17 +69,13 @@ export class BookController {
   }
 
   @Post()
-  @ApiEndpoint({ info: { summary: 'Create a new book' }, type: BookDto, auth: true })
+  @ApiEndpoint({ summary: 'Create a new book', type: BookDto, auth: true })
   async createBook(@Body() bookDto: BookDto) {
     return this.bookService.createBook(bookDto)
   }
 
   @Put(':id')
-  @ApiEndpoint({
-    info: { summary: 'Update book', notFound: 'book' },
-    type: BookDto,
-    auth: true,
-  })
+  @ApiEndpoint({ summary: 'Update book', notFound: 'book', type: BookDto, auth: true })
   @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
   async updateBook(@Param('id') id: number, @Body() bookDto: BookDto) {
     const updatedBook = await this.bookService.updateBook(id, bookDto)
@@ -98,11 +86,7 @@ export class BookController {
   }
 
   @Delete(':id')
-  @ApiEndpoint({
-    info: { summary: 'Delete book', notFound: 'Book' },
-    type: BookDto,
-    auth: true,
-  })
+  @ApiEndpoint({ summary: 'Delete book', notFound: 'Book', type: BookDto, auth: true })
   @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
   async deleteBook(@Param('id') id: number) {
     const deletedBook = await this.bookService.deleteBook(id)
@@ -116,11 +100,7 @@ export class BookController {
   }
 
   @Put('restore/:id')
-  @ApiEndpoint({
-    info: { summary: 'Restore book', notFound: 'Book' },
-    type: BookDto,
-    auth: true,
-  })
+  @ApiEndpoint({ summary: 'Restore book', notFound: 'Book', type: BookDto, auth: true })
   @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.UPDATE_ADMIN]))
   async restoreBook(@Param('id') id: number) {
     const book = await this.bookService.restoreBook(id)
