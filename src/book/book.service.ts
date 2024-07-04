@@ -40,10 +40,22 @@ export class BookService {
     const filterConditions = getFilterConditions(filter)
     const sortConditions = getSortConditions(filter)
 
+    const where = {
+      OR: [
+        filterConditions,
+        {
+          isbn: {
+            contains: filter.title,
+            mode: 'insensitive',
+          },
+        },
+      ],
+    }
+
     const offset = (page - 1) * limit
 
     const books = await this.prisma.book.findMany({
-      where: filterConditions,
+      where,
       include: {
         categories: true,
         author: true,
@@ -55,7 +67,7 @@ export class BookService {
     })
 
     const totalBooks = await this.prisma.book.count({
-      where: filterConditions,
+      where,
     })
 
     return {

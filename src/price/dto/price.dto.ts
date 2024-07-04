@@ -1,13 +1,6 @@
-import {
-  IsNotEmpty,
-  MaxLength,
-  IsUrl,
-  IsNumber,
-  IsDecimal,
-  IsDate,
-} from 'class-validator'
+import { IsNotEmpty, MaxLength, IsUrl, IsNumber, IsDate } from 'class-validator'
 
-class priceDto {
+class PriceDto {
   @IsNotEmpty()
   @IsNumber()
   bookId: number
@@ -17,7 +10,7 @@ class priceDto {
   platformId: number
 
   @IsNotEmpty()
-  @IsDecimal()
+  @IsNumber()
   price: number
 
   @IsNotEmpty()
@@ -30,4 +23,9 @@ class priceDto {
   productUrl: string
 }
 
-export { priceDto }
+class EditPriceDto {
+  @IsNumber()
+  price: number
+}
+
+export { PriceDto, EditPriceDto }
