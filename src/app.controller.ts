@@ -37,8 +37,7 @@ export class AppController {
    */
   @Get('/admin')
   @ApiEndpoint({ summary: 'Get Admin Content', auth: true, type: Message })
-  @UseGuards(AuthGuard)
-  @UseGuards(PermissionsGuard([AuthPermissions.READ_ADMIN]))
+  @UseGuards(AuthGuard, PermissionsGuard([AuthPermissions.READ_ADMIN]))
   getAdminContent(): { message: string } {
     return this.appService.getAdminContent()
   }
