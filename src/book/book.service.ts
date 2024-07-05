@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import { BookDto, BookFilterDto, UpdateBookDto } from './dto'
-import { applyFilterMapping } from '../utils'
 import { plainToClass } from 'class-transformer'
-import { filterMappings, parsedFilter, parseSort, sortMappings } from './utils'
+import { getFilterConditions, getSortConditions } from './utils'
 
 @Injectable()
 export class BookService {
@@ -38,15 +37,25 @@ export class BookService {
   }
 
   async getAllBooks(page: number = 1, limit: number = 20, filter: BookFilterDto = {}) {
-    const parsedFilterBooks = parsedFilter(filter)
-    const filterConditions = applyFilterMapping(parsedFilterBooks, filterMappings)
-    const parseSortBooks = parseSort(filter)
-    const sortConditions = applyFilterMapping(parseSortBooks, sortMappings)
+    const filterConditions = getFilterConditions(filter)
+    const sortConditions = getSortConditions(filter)
+
+    const where = {
+      OR: [
+        filterConditions,
+        {
+          isbn: {
+            contains: filter.title,
+            mode: 'insensitive',
+          },
+        },
+      ],
+    }
 
     const offset = (page - 1) * limit
 
     const books = await this.prisma.book.findMany({
-      where: filterConditions,
+      where,
       include: {
         categories: true,
         author: true,
@@ -58,7 +67,7 @@ export class BookService {
     })
 
     const totalBooks = await this.prisma.book.count({
-      where: filterConditions,
+      where,
     })
 
     return {
@@ -132,6 +141,31 @@ export class BookService {
     return recommendations
   }
 
+  /**
+   * Get KPIs (Key Performance Indicators) for books
+   * @returns KPIs for books
+   */
+  async getBooksKpi() {
+    const totalBooks = await this.prisma.book.count()
+    const totalBooksMarkedAsDeleted = await this.prisma.book.count({
+      where: { isDeleted: true },
+    })
+    const totalPrices = await this.prisma.price.count()
+    const totalPricesMarkedAsDeleted = await this.prisma.price.count({
+      where: { isDeleted: true },
+    })
+    const totalAuthors = await this.prisma.author.count()
+    const totalCategories = await this.prisma.category.count()
+    return {
+      totalBooks,
+      totalBooksMarkedAsDeleted,
+      totalPrices,
+      totalPricesMarkedAsDeleted,
+      totalAuthors,
+      totalCategories,
+    }
+  }
+
   async updateBook(id: number, data: UpdateBookDto) {
     const { title, authorId, isbn, publishedDate, description, imgUrl, categories } = data
 
@@ -167,5 +201,16 @@ export class BookService {
       throw new NotFoundException(`Book with ID ${id} not found`)
     }
     return deletedBook
+  }
+
+  async restoreBook(id: number) {
+    const book = await this.prisma.book.update({
+      where: { id },
+      data: { isDeleted: false },
+    })
+    if (!book) {
+      throw new NotFoundException(`Book with ID ${id} not found`)
+    }
+    return book
   }
 }

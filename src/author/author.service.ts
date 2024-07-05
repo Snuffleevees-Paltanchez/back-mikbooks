@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { AuthorDto, AuthorFilterDto } from './dto'
-import { applyFilterMapping } from '../utils'
+import { applyFilterMapping } from '../common/utils/common.filter.utils'
 
 const filterMappings = {
   name: (value: string) => ({ contains: value, mode: 'insensitive' }),

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { PriceController } from '../../src/price/price.controller'
 import { PriceService } from '../../src/price/price.service'
 import { NotFoundException } from '@nestjs/common'
-import { priceDto } from '../../src/price/dto'
+import { EditPriceDto } from '../../src/price/dto'
 
 class MockPriceService {
   private prices = [
@@ -20,7 +20,7 @@ class MockPriceService {
     }
   }
 
-  async updatePrice(id: number, priceData: priceDto) {
+  async updatePrice(id: number, priceData: EditPriceDto) {
     const index = this.prices.findIndex((price) => price.id === id)
     if (index !== -1) {
       this.prices[index].price = priceData.price

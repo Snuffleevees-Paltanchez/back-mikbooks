@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
-import { priceDto } from './dto'
+import { PriceDto, EditPriceDto } from './dto'
 
 @Injectable()
 export class PriceService {
   constructor(private prisma: PrismaService) {}
 
-  async findOrCreate(priceData: priceDto) {
+  async findOrCreate(priceData: PriceDto) {
     const { bookId, platformId, date, productUrl } = priceData
 
     let price = await this.prisma.price.findFirst({
@@ -32,7 +32,19 @@ export class PriceService {
     return price
   }
 
-  async updatePrice(id: string, priceData: priceDto) {
+  async getPrice(id: string) {
+    const price = await this.prisma.price.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    })
+    if (!price) {
+      throw new NotFoundException(`Price with ID ${id} not found`)
+    }
+    return price
+  }
+
+  async updatePrice(id: string, priceData: EditPriceDto) {
     const existingPrice = await this.prisma.price.findUnique({
       where: {
         id: parseInt(id),
@@ -60,5 +72,16 @@ export class PriceService {
       throw new NotFoundException(`Price with ID ${id} not found`)
     }
     return deletedPrice
+  }
+
+  async restorePrice(id: number) {
+    const price = await this.prisma.price.update({
+      where: { id },
+      data: { isDeleted: false },
+    })
+    if (!price) {
+      throw new NotFoundException(`Price with ID ${id} not found`)
+    }
+    return price
   }
 }
