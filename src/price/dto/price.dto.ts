@@ -38,6 +38,10 @@ class PriceDto {
 }
 
 class PriceDtoResponse extends PriceDto {
+  @IsNumber()
+  @ApiProperty({ example: 1 })
+  id: number
+
   @IsDate()
   @ApiProperty({ example: '2021-01-01' })
   createdAt: Date
