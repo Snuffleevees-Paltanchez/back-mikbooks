@@ -3,20 +3,20 @@ import { AppService } from './app.service'
 import { AuthGuard } from './auth/auth.guard'
 import { PermissionsGuard } from './auth/permissions.guard'
 import { AuthPermissions } from './auth/auth.permissions'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger'
+import { ApiTags } from '@nestjs/swagger'
+import { ApiEndpoint } from './common/decorators/common.docs.decorators'
 
 class Message {
   message: string
 }
 
+@ApiTags('API')
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  @ApiTags('API')
-  @ApiOperation({ summary: 'Get Hello' })
-  @ApiResponse({ status: 200, description: 'Hello World!', type: String })
+  @ApiEndpoint({ summary: 'Get Hello', type: Message })
   getHello(): string {
     return this.appService.getHello()
   }
@@ -25,12 +25,9 @@ export class AppController {
    * Only authenticated users can access this route. This does not mean that the user is an admin
    * or has any other role, just that they are authenticated.
    */
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
-  @ApiTags('API')
-  @ApiOperation({ summary: 'Get Protected Content' })
-  @ApiResponse({ status: 200, description: 'Protected Content', type: Message })
   @Get('/protected')
+  @ApiEndpoint({ summary: 'Get Protected Content', auth: true, type: Message })
+  @UseGuards(AuthGuard)
   getProtectedContent(): { message: string } {
     return this.appService.getProtectedContent()
   }
@@ -38,13 +35,10 @@ export class AppController {
   /**
    * Only authenticated users with the read:admin-content permission can access this route.
    */
-  @ApiBearerAuth()
-  @UseGuards(PermissionsGuard([AuthPermissions.READ_ADMIN]))
-  @UseGuards(AuthGuard)
-  @ApiTags('API')
-  @ApiOperation({ summary: 'Get Admin Content' })
-  @ApiResponse({ status: 200, description: 'Admin Content', type: Message })
   @Get('/admin')
+  @ApiEndpoint({ summary: 'Get Admin Content', auth: true, type: Message })
+  @UseGuards(AuthGuard)
+  @UseGuards(PermissionsGuard([AuthPermissions.READ_ADMIN]))
   getAdminContent(): { message: string } {
     return this.appService.getAdminContent()
   }

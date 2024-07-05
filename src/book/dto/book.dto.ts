@@ -163,6 +163,7 @@ export class GetBooksDto extends BookFilterDto {
 export class GetBookByISBNDto {
   @IsNotEmpty()
   @IsISBN()
+  @ApiProperty({ example: '9789877978889' })
   isbn: string
 }
 
@@ -197,21 +198,4 @@ export class UpdateBookDto {
   @IsOptional()
   @IsArray()
   categories?: string[] | null
-}
-
-export class BooksResponse {
-  @ApiProperty()
-  total: number
-
-  @ApiProperty()
-  page: number
-
-  @ApiProperty()
-  limit: number
-
-  @ApiProperty()
-  hasNextPage: boolean
-
-  @ApiProperty({ type: [BookDto] })
-  data: BookDto[]
 }

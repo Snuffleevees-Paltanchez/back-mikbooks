@@ -1,4 +1,4 @@
-import { applyFilterMapping } from '../../utils'
+import { applyFilterMapping } from '../../common/utils/common.filter.utils'
 import { BookFilterDto } from '../dto/book.dto'
 
 /**
