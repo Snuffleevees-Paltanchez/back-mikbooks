@@ -135,11 +135,6 @@ export class BookFilterDto {
 
   @IsOptional()
   @IsString()
-  @ApiProperty({ required: false, description: 'Sort by price' })
-  sortByPrice?: 'asc' | 'desc'
-
-  @IsOptional()
-  @IsString()
   @ApiProperty({ required: false, description: 'Sort by rating' })
   sortByRating?: 'asc' | 'desc'
 
