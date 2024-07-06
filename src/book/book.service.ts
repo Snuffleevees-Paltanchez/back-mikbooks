@@ -37,20 +37,8 @@ export class BookService {
   }
 
   async getAllBooks(page: number = 1, limit: number = 20, filter: BookFilterDto = {}) {
-    const filterConditions = getFilterConditions(filter)
     const sortConditions = getSortConditions(filter)
-
-    const where = {
-      OR: [
-        filterConditions,
-        {
-          isbn: {
-            contains: filter.title,
-            mode: 'insensitive',
-          },
-        },
-      ],
-    }
+    const where = getFilterConditions(filter, sortConditions)
 
     const offset = (page - 1) * limit
 

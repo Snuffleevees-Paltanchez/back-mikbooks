@@ -135,8 +135,18 @@ export class BookFilterDto {
 
   @IsOptional()
   @IsString()
+  @ApiProperty({ required: false, description: 'Sort by price' })
+  sortByPrice?: 'asc' | 'desc'
+
+  @IsOptional()
+  @IsString()
   @ApiProperty({ required: false, description: 'Sort by rating' })
   sortByRating?: 'asc' | 'desc'
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ required: false, description: 'Sort by rating count' })
+  sortByRatingCount?: 'asc' | 'desc'
 
   // We can't use IsBoolean here because the query parameter is a string
   @IsOptional()
