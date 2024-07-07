@@ -50,7 +50,7 @@ export const applyFilterMapping = (filter: Filter, filterMappings: FilterMapping
  * authorId: 1,
  * }
  * const filtersNotToBeNull = ['ratingCount']
- * const filters = addNotNullToFilterMapping(allFilters, filtersNotToBeNull)
+ * const filters = excludeNullValuesFromFilters(allFilters, filtersNotToBeNull)
  * const books = await this.prisma.book.findMany({where: filters})
  * const totalBooks = await this.prisma.book.count({where: filters})
  */
