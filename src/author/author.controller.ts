@@ -11,7 +11,7 @@ export class AuthorController {
 
   @Get()
   @ApiEndpoint({ summary: 'Get all authors', type: AuthorsResponse })
-  async getAllCategories(@Query() query: GetAuthorsDto) {
+  async getAllAuthors(@Query() query: GetAuthorsDto) {
     const { page, limit, ...filters } = query
     const books = await this.authorService.getAllAuthors(page, limit, filters)
     return books
