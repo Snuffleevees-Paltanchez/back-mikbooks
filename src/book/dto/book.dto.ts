@@ -138,6 +138,11 @@ export class BookFilterDto {
   @ApiProperty({ required: false, description: 'Sort by rating' })
   sortByRating?: 'asc' | 'desc'
 
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ required: false, description: 'Sort by rating count' })
+  sortByRatingCount?: 'asc' | 'desc'
+
   // We can't use IsBoolean here because the query parameter is a string
   @IsOptional()
   @ApiProperty({ required: false, description: 'Filter by deleted status' })

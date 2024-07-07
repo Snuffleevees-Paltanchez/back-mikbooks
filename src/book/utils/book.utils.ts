@@ -1,4 +1,7 @@
-import { applyFilterMapping } from '../../common/utils/common.filter.utils'
+import {
+  applyFilterMapping,
+  excludeNullValuesFromFilters,
+} from '../../common/utils/common.filter.utils'
 import { BookFilterDto } from '../dto/book.dto'
 
 /**
@@ -44,18 +47,26 @@ const parseFilter = (filter: BookFilterDto) => ({
 
 const parseSort = (filter: BookFilterDto) => ({
   ratingAvg: filter.sortByRating,
+  ratingCount: filter.sortByRatingCount,
 })
 
 const sortMappings = {
   ratingAvg: (value: string) => value,
+  ratingCount: (value: string) => value,
 }
 
 /**
  * Get filter conditions for book
  * @param queryFilters
  */
-export const getFilterConditions = (queryFilters: BookFilterDto) =>
-  applyFilterMapping(parseFilter(queryFilters), filterMappings)
+export const getFilterConditions = (
+  queryFilters: BookFilterDto,
+  sortConditions: Record<string, any>,
+) => {
+  const sortConditionsKeys = Object.keys(sortConditions)
+  const filters = applyFilterMapping(parseFilter(queryFilters), filterMappings)
+  return excludeNullValuesFromFilters(filters, sortConditionsKeys)
+}
 
 /**
  * Get sort conditions for book

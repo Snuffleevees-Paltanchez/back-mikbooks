@@ -37,3 +37,33 @@ export const applyFilterMapping = (filter: Filter, filterMappings: FilterMapping
   }
   return filterConditions
 }
+
+/**
+ * Add not null to filter mapping. Useful if you have sort conditions and you don't want to
+ * include null values.
+ * @param allFilters Filter object
+ * @param filtersNotToBeNull Filters not to be null
+ * @returns Filter object with specified filters not to be null
+ * @example
+ * const allFilters = {
+ * title: 'Book Title',
+ * authorId: 1,
+ * }
+ * const filtersNotToBeNull = ['ratingCount']
+ * const filters = excludeNullValuesFromFilters(allFilters, filtersNotToBeNull)
+ * const books = await this.prisma.book.findMany({where: filters})
+ * const totalBooks = await this.prisma.book.count({where: filters})
+ */
+export const excludeNullValuesFromFilters = (
+  allFilters: Filter,
+  filtersNotToBeNull: string[],
+) => {
+  const filters = { ...allFilters }
+  filtersNotToBeNull.forEach((filter) => {
+    filters[filter] = {
+      not: null,
+      ...filters[filter],
+    }
+  })
+  return filters
+}
